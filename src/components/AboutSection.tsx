@@ -1,101 +1,91 @@
-import { motion } from "framer-motion";
-import { Shield, Cpu, Zap, Globe } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Globe, Award, Users, Headphones } from "lucide-react";
 
 const features = [
   {
-    icon: Shield,
-    title: "Military-Grade Quality",
-    description: "Industrial-grade components designed for mission-critical applications."
-  },
-  {
-    icon: Cpu,
-    title: "DroneCAN Native",
-    description: "All products support UAVCAN/DroneCAN for seamless integration."
-  },
-  {
-    icon: Zap,
-    title: "Ultra-Low Power",
-    description: "Optimized power consumption for extended flight times."
-  },
-  {
     icon: Globe,
-    title: "Global Support",
-    description: "Ardupilot and PX4 compatible with worldwide developer support."
+    title: "Global Export Ready",
+    description: "Products certified for international markets with full compliance documentation."
+  },
+  {
+    icon: Award,
+    title: "Industry Certified",
+    description: "Meeting international aerospace standards for reliability and performance."
+  },
+  {
+    icon: Users,
+    title: "Technical Support",
+    description: "Dedicated engineering team for integration assistance and custom solutions."
+  },
+  {
+    icon: Headphones,
+    title: "24/7 Assistance",
+    description: "Round-the-clock support for mission-critical deployments worldwide."
   }
 ];
 
 const AboutSection = () => {
-  return (
-    <section id="about" className="py-20 md:py-32 bg-card relative overflow-hidden">
-      {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-      <div className="container mx-auto px-4 relative">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+  return (
+    <section id="about" ref={ref} className="py-24 md:py-32 bg-secondary relative overflow-hidden">
+      {/* Decorative */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/5 to-transparent" />
+
+      <div className="container mx-auto px-4 lg:px-8 relative">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, x: -40 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8 }}
           >
-            <span className="text-primary text-sm font-medium tracking-widest uppercase mb-4 block">
+            <span className="text-accent text-sm font-semibold tracking-widest uppercase mb-4 block">
               About Sierra Aerospace
             </span>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6">
-              Engineering Excellence for the <span className="text-primary">Future of Flight</span>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
+              Engineering Excellence for Modern Aviation
             </h2>
-            <p className="text-muted-foreground mb-6 leading-relaxed">
+            <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
               Sierra Aerospace specializes in developing high-precision avionics systems 
-              for unmanned aerial vehicles. Our products are designed with a focus on 
-              reliability, accuracy, and seamless integration with popular flight stacks.
+              for unmanned aerial vehicles. With a commitment to quality and innovation, 
+              we serve customers across more than 50 countries.
             </p>
-            <p className="text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
               From centimeter-level RTK GPS modules to advanced autopilot systems, 
-              we provide the technology that enables the next generation of autonomous flight.
+              our products are engineered for reliability in the most demanding environments.
             </p>
 
-            {/* Stats Row */}
-            <div className="grid grid-cols-3 gap-6">
-              {[
-                { value: "±1cm", label: "RTK Precision" },
-                { value: "15g", label: "Lightweight" },
-                { value: "24/7", label: "Support" }
-              ].map((stat, i) => (
-                <div key={i} className="text-center p-4 bg-secondary rounded-lg border border-border">
-                  <div className="text-xl md:text-2xl font-heading font-bold text-primary">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">{stat.label}</div>
-                </div>
+            {/* Certifications */}
+            <div className="flex flex-wrap gap-4">
+              {["ISO 9001", "CE Certified", "RoHS", "ITAR Compliant"].map((cert, i) => (
+                <span key={i} className="px-4 py-2 bg-background border border-border text-sm font-medium text-foreground">
+                  {cert}
+                </span>
               ))}
             </div>
           </motion.div>
 
           {/* Right - Features Grid */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-2 gap-4"
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {features.map((feature, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6 bg-background border border-border rounded-xl hover:border-primary/50 transition-colors group"
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.2 + i * 0.1, duration: 0.6 }}
+                className="p-6 bg-background border border-border hover:border-accent/30 transition-colors group"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+                  <feature.icon className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="font-heading font-semibold mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="font-heading text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
