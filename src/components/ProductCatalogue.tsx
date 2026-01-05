@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { products, categories, type Product, type ProductCategory } from "@/data/products";
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
@@ -7,49 +7,47 @@ import ProductModal from "./ProductModal";
 const ProductCatalogue = () => {
   const [activeCategory, setActiveCategory] = useState<ProductCategory | "All">("All");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const filteredProducts = activeCategory === "All" 
     ? products 
     : products.filter(p => p.category === activeCategory);
 
   return (
-    <section id="products" className="py-20 md:py-32 relative">
-      {/* Background */}
-      <div className="absolute inset-0 circuit-pattern opacity-10" />
-      
-      <div className="container mx-auto px-4 relative">
+    <section id="products" ref={ref} className="py-24 md:py-32 bg-background relative">
+      <div className="container mx-auto px-4 lg:px-8">
         {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="max-w-3xl mb-16"
         >
-          <span className="text-primary text-sm font-medium tracking-widest uppercase mb-4 block">
-            Our Products
+          <span className="text-accent text-sm font-semibold tracking-widest uppercase mb-4 block">
+            Product Catalogue
           </span>
-          <h2 className="font-heading text-3xl md:text-5xl font-bold mb-4">
-            Avionics <span className="text-primary">Catalogue</span>
+          <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground">
+            Precision Avionics Solutions
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Explore our comprehensive range of precision avionics systems designed for 
-            UAV and drone applications.
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            Explore our comprehensive range of RTK GPS modules, autopilots, sensors, 
+            and power systems designed for professional UAV applications worldwide.
           </p>
         </motion.div>
 
         {/* Category Filter */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-2 mb-12"
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="flex flex-wrap gap-2 mb-12"
         >
           <button
             onClick={() => setActiveCategory("All")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+            className={`px-5 py-2.5 text-sm font-semibold transition-all duration-300 tracking-wide ${
               activeCategory === "All"
-                ? "bg-primary text-primary-foreground glow-primary"
+                ? "bg-accent text-accent-foreground"
                 : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
             }`}
           >
@@ -59,9 +57,9 @@ const ProductCatalogue = () => {
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              className={`px-5 py-2.5 text-sm font-semibold transition-all duration-300 tracking-wide ${
                 activeCategory === category
-                  ? "bg-primary text-primary-foreground glow-primary"
+                  ? "bg-accent text-accent-foreground"
                   : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
@@ -71,10 +69,7 @@ const ProductCatalogue = () => {
         </motion.div>
 
         {/* Products Grid */}
-        <motion.div
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product, index) => (
             <ProductCard
               key={product.id}
@@ -83,7 +78,7 @@ const ProductCatalogue = () => {
               onSelect={setSelectedProduct}
             />
           ))}
-        </motion.div>
+        </div>
 
         {/* Empty State */}
         {filteredProducts.length === 0 && (
