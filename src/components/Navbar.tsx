@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "./ui/button";
+import logo from "@/assets/sierra-logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,15 +38,12 @@ const Navbar = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-3">
-            <div className="flex flex-col">
-              <span className="font-heading text-2xl font-bold text-foreground tracking-tight">
-                Sierra
-              </span>
-              <span className="text-xs font-body text-muted-foreground tracking-[0.3em] uppercase -mt-1">
-                Aerospace
-              </span>
-            </div>
+          <a href="#home" className="flex items-center">
+            <img 
+              src={logo} 
+              alt="Sierra Aerospace" 
+              className="h-12 w-auto"
+            />
           </a>
 
           {/* Desktop Nav */}
@@ -54,10 +52,10 @@ const Navbar = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-foreground/80 hover:text-accent transition-colors duration-300 font-medium text-sm tracking-wide relative group"
+                className="text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-sm tracking-wide relative group"
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
           </div>
@@ -68,7 +66,7 @@ const Navbar = () => {
               <Phone size={16} />
               <span>+1 (555) 123-4567</span>
             </a>
-            <Button variant="gold" size="default" asChild>
+            <Button variant="blue" size="default" asChild>
               <a href="#contact">Get Quote</a>
             </Button>
           </div>
@@ -98,13 +96,13 @@ const Navbar = () => {
                   key={item.label}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="text-foreground hover:text-accent transition-colors py-2 font-medium text-lg"
+                  className="text-foreground hover:text-primary transition-colors py-2 font-medium text-lg"
                 >
                   {item.label}
                 </a>
               ))}
               <div className="pt-4 border-t border-border">
-                <Button variant="gold" className="w-full" asChild>
+                <Button variant="blue" className="w-full" asChild>
                   <a href="#contact">Get Quote</a>
                 </Button>
               </div>

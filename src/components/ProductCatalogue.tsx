@@ -24,7 +24,7 @@ const ProductCatalogue = () => {
           transition={{ duration: 0.8 }}
           className="max-w-3xl mb-16"
         >
-          <span className="text-accent text-sm font-semibold tracking-widest uppercase mb-4 block">
+          <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-4 block">
             Product Catalogue
           </span>
           <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground">
@@ -47,7 +47,7 @@ const ProductCatalogue = () => {
             onClick={() => setActiveCategory("All")}
             className={`px-5 py-2.5 text-sm font-semibold transition-all duration-300 tracking-wide ${
               activeCategory === "All"
-                ? "bg-accent text-accent-foreground"
+                ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
             }`}
           >
@@ -59,7 +59,7 @@ const ProductCatalogue = () => {
               onClick={() => setActiveCategory(category)}
               className={`px-5 py-2.5 text-sm font-semibold transition-all duration-300 tracking-wide ${
                 activeCategory === category
-                  ? "bg-accent text-accent-foreground"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >

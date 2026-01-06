@@ -20,7 +20,7 @@ const NotFound = () => {
         <p className="text-muted-foreground mb-8 max-w-md mx-auto">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <Button variant="gold" size="lg" asChild>
+        <Button variant="blue" size="lg" asChild>
           <Link to="/">
             <Home className="w-4 h-4 mr-2" />
             Return to Home

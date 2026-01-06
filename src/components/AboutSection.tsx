@@ -32,7 +32,7 @@ const AboutSection = () => {
   return (
     <section id="about" ref={ref} className="py-24 md:py-32 bg-secondary relative overflow-hidden">
       {/* Decorative */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent/5 to-transparent" />
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/5 to-transparent" />
 
       <div className="container mx-auto px-4 lg:px-8 relative">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -42,7 +42,7 @@ const AboutSection = () => {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <span className="text-accent text-sm font-semibold tracking-widest uppercase mb-4 block">
+            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-4 block">
               About Sierra Aerospace
             </span>
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
@@ -76,10 +76,10 @@ const AboutSection = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.2 + i * 0.1, duration: 0.6 }}
-                className="p-6 bg-background border border-border hover:border-accent/30 transition-colors group"
+                className="p-6 bg-background border border-border hover:border-primary/30 transition-colors group"
               >
-                <div className="w-12 h-12 bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
-                  <feature.icon className="w-6 h-6 text-accent" />
+                <div className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <feature.icon className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="font-heading text-lg font-semibold mb-2 text-foreground">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
