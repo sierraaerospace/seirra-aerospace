@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Linkedin, Twitter, Youtube, Mail } from "lucide-react";
+import logo from "@/assets/sierra-logo.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -26,19 +27,20 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-foreground text-background">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Main Footer */}
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <span className="font-heading text-2xl font-bold">Sierra</span>
-              <span className="text-xs tracking-[0.3em] uppercase block text-primary-foreground/70">
-                Aerospace
-              </span>
+              <img 
+                src={logo} 
+                alt="Sierra Aerospace" 
+                className="h-12 w-auto invert"
+              />
             </div>
-            <p className="text-primary-foreground/70 mb-6 max-w-xs leading-relaxed">
+            <p className="text-background/70 mb-6 max-w-xs leading-relaxed">
               Precision avionics solutions for professional UAV applications. 
               Trusted by organizations in over 50 countries worldwide.
             </p>
@@ -53,7 +55,7 @@ const Footer = () => {
                 <a
                   key={i}
                   href={social.href}
-                  className="w-10 h-10 bg-primary-foreground/10 flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors"
+                  className="w-10 h-10 bg-background/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
                   <social.icon size={18} />
                 </a>
@@ -69,7 +71,7 @@ const Footer = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-primary-foreground/70 hover:text-accent transition-colors text-sm"
+                    className="text-background/70 hover:text-primary transition-colors text-sm"
                   >
                     {link.label}
                   </a>
@@ -86,7 +88,7 @@ const Footer = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-primary-foreground/70 hover:text-accent transition-colors text-sm"
+                    className="text-background/70 hover:text-primary transition-colors text-sm"
                   >
                     {link.label}
                   </a>
@@ -103,7 +105,7 @@ const Footer = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    className="text-primary-foreground/70 hover:text-accent transition-colors text-sm"
+                    className="text-background/70 hover:text-primary transition-colors text-sm"
                   >
                     {link.label}
                   </a>
@@ -114,18 +116,18 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-6 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-primary-foreground/60">
+        <div className="py-6 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-background/60">
             © {currentYear} Sierra Aerospace. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm text-primary-foreground/60">
-            <a href="#" className="hover:text-primary-foreground transition-colors">
+          <div className="flex gap-6 text-sm text-background/60">
+            <a href="#" className="hover:text-background transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">
+            <a href="#" className="hover:text-background transition-colors">
               Terms of Service
             </a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">
+            <a href="#" className="hover:text-background transition-colors">
               Export Compliance
             </a>
           </div>

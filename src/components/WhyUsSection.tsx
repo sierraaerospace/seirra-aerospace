@@ -44,7 +44,7 @@ const WhyUsSection = () => {
             transition={{ duration: 0.8 }}
             className="lg:sticky lg:top-32"
           >
-            <span className="text-accent text-sm font-semibold tracking-widest uppercase mb-4 block">
+            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-4 block">
               Why Choose Us
             </span>
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
@@ -57,11 +57,11 @@ const WhyUsSection = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-6">
-              <div className="border-l-4 border-accent pl-4">
-                <div className="text-3xl font-heading font-bold text-foreground">500+</div>
-                <div className="text-sm text-muted-foreground">Global Partners</div>
+              <div className="border-l-4 border-primary pl-4">
+                <div className="text-3xl font-heading font-bold text-foreground">50+</div>
+                <div className="text-sm text-muted-foreground">Countries Served</div>
               </div>
-              <div className="border-l-4 border-accent pl-4">
+              <div className="border-l-4 border-primary pl-4">
                 <div className="text-3xl font-heading font-bold text-foreground">10+</div>
                 <div className="text-sm text-muted-foreground">Years Experience</div>
               </div>
@@ -76,11 +76,11 @@ const WhyUsSection = () => {
                 initial={{ opacity: 0, x: 40 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.2 + i * 0.1, duration: 0.6 }}
-                className="p-6 bg-secondary border border-border hover:border-accent/30 transition-all duration-300"
+                className="p-6 bg-secondary border border-border hover:border-primary/30 transition-all duration-300"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 bg-accent/10 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="w-5 h-5 text-accent" />
+                  <div className="w-8 h-8 bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-heading text-lg font-semibold mb-2 text-foreground">
