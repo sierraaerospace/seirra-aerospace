@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "./ui/button";
-import logo from "@/assets/sierra-logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,18 +31,32 @@ const Navbar = () => {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled
           ? "bg-background/95 backdrop-blur-md shadow-elegant border-b border-border"
-          : "bg-transparent"
+          : "bg-foreground/95 backdrop-blur-sm"
       }`}
     >
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <a href="#home" className="flex items-center">
-            <img 
-              src={logo} 
-              alt="Sierra Aerospace" 
-              className="h-12 w-auto"
-            />
+          {/* Logo - SVG version for clean rendering */}
+          <a href="#home" className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              {/* Logo Icon */}
+              <svg 
+                viewBox="0 0 40 40" 
+                className={`w-10 h-10 transition-colors duration-500 ${isScrolled ? 'text-foreground' : 'text-background'}`}
+                fill="currentColor"
+              >
+                <rect x="2" y="2" width="36" height="36" fill="none" stroke="currentColor" strokeWidth="3"/>
+                <line x1="2" y1="38" x2="38" y2="2" stroke="currentColor" strokeWidth="3"/>
+              </svg>
+              <div className="flex flex-col">
+                <span className={`font-heading text-2xl font-bold tracking-tight transition-colors duration-500 ${isScrolled ? 'text-foreground' : 'text-background'}`}>
+                  Sierra
+                </span>
+                <span className={`text-[10px] tracking-[0.25em] uppercase -mt-1 transition-colors duration-500 ${isScrolled ? 'text-muted-foreground' : 'text-background/70'}`}>
+                  Aerospace
+                </span>
+              </div>
+            </div>
           </a>
 
           {/* Desktop Nav */}
@@ -52,17 +65,30 @@ const Navbar = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-foreground/80 hover:text-primary transition-colors duration-300 font-medium text-sm tracking-wide relative group"
+                className={`transition-colors duration-300 font-medium text-sm tracking-wide relative group ${
+                  isScrolled 
+                    ? 'text-foreground/80 hover:text-primary' 
+                    : 'text-background/80 hover:text-background'
+                }`}
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                <span className={`absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
+                  isScrolled ? 'bg-primary' : 'bg-background'
+                }`} />
               </a>
             ))}
           </div>
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center gap-4">
-            <a href="tel:+15551234567" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a 
+              href="tel:+15551234567" 
+              className={`flex items-center gap-2 text-sm transition-colors ${
+                isScrolled 
+                  ? 'text-muted-foreground hover:text-foreground' 
+                  : 'text-background/70 hover:text-background'
+              }`}
+            >
               <Phone size={16} />
               <span>+1 (555) 123-4567</span>
             </a>
@@ -74,7 +100,7 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-foreground"
+            className={`lg:hidden p-2 transition-colors ${isScrolled ? 'text-foreground' : 'text-background'}`}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
