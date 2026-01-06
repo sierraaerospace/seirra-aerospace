@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, ChevronDown, Play, Pause } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import heroVideo from "@/assets/hero-drone-video.mp4";
 
 const Hero = () => {
@@ -10,6 +10,16 @@ const Hero = () => {
   const isInView = useInView(ref, { once: true });
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Ensure seamless looping
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.playbackRate = 1;
+      // Preload the video to prevent stuttering
+      video.preload = "auto";
+    }
+  }, []);
 
   const toggleVideo = () => {
     if (videoRef.current) {
@@ -24,28 +34,33 @@ const Hero = () => {
 
   return (
     <section id="home" ref={ref} className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-foreground">
-      {/* Video Background */}
+      {/* Video Background with smooth loop */}
       <video
         ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
-        className="video-bg opacity-60"
+        preload="auto"
+        className="video-bg opacity-50"
+        style={{ 
+          filter: 'brightness(0.7) contrast(1.1)',
+        }}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/70 to-transparent z-[1]" />
+      {/* Gradient Overlay for smooth blend */}
+      <div className="absolute inset-0 bg-gradient-to-r from-foreground via-foreground/80 to-foreground/40 z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-foreground/30 z-[1]" />
 
       {/* Animated Grid Pattern */}
       <div 
-        className="absolute inset-0 opacity-10 z-[2]"
+        className="absolute inset-0 opacity-[0.03] z-[2]"
         style={{
           backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px),
                            linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
+          backgroundSize: '80px 80px'
         }}
       />
 
@@ -56,7 +71,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/40 rounded-full mb-8"
           >
             <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             <span className="text-sm font-medium text-background/90 tracking-wide">
@@ -99,7 +114,12 @@ const Hero = () => {
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </Button>
-            <Button variant="blueOutline" size="xl" className="border-background/30 text-background hover:bg-background hover:text-foreground" asChild>
+            <Button 
+              variant="outline" 
+              size="xl" 
+              className="border-background/30 text-background hover:bg-background hover:text-foreground bg-transparent" 
+              asChild
+            >
               <a href="#contact">Request Catalogue</a>
             </Button>
           </motion.div>
@@ -138,7 +158,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
           onClick={toggleVideo}
-          className="absolute bottom-24 right-8 p-4 rounded-full bg-background/10 backdrop-blur-sm border border-background/20 text-background hover:bg-background/20 transition-all"
+          className="absolute bottom-24 right-8 p-4 rounded-full bg-background/10 backdrop-blur-sm border border-background/20 text-background hover:bg-primary hover:border-primary transition-all"
         >
           {isPlaying ? <Pause size={20} /> : <Play size={20} />}
         </motion.button>
