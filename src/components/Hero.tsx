@@ -33,7 +33,7 @@ const Hero = () => {
           >
             <span className="w-2 h-2 bg-accent rounded-full" />
             <span className="text-sm font-medium text-foreground/80 tracking-wide">
-              Trusted by 500+ Global Partners
+              Precision Avionics Systems
             </span>
           </motion.div>
 
@@ -86,9 +86,9 @@ const Hero = () => {
           >
             {[
               { value: "±1cm", label: "RTK Precision" },
-              { value: "50+", label: "Countries Served" },
               { value: "15+", label: "Product Lines" },
               { value: "99.9%", label: "Reliability Rate" },
+              { value: "24/7", label: "Technical Support" },
             ].map((stat, i) => (
               <motion.div 
                 key={i}

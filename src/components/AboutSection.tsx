@@ -51,7 +51,7 @@ const AboutSection = () => {
             <p className="text-muted-foreground mb-6 text-lg leading-relaxed">
               Sierra Aerospace specializes in developing high-precision avionics systems 
               for unmanned aerial vehicles. With a commitment to quality and innovation, 
-              we serve customers across more than 50 countries.
+              we deliver reliable solutions for professional UAV applications.
             </p>
             <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
               From centimeter-level RTK GPS modules to advanced autopilot systems, 
