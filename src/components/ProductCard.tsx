@@ -16,7 +16,7 @@ const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
       onClick={() => onSelect(product)}
-      className="group cursor-pointer bg-card border border-border hover:border-primary/30 transition-all duration-500 overflow-hidden"
+      className="group cursor-pointer bg-card border border-border hover:border-accent/30 transition-all duration-500 overflow-hidden"
     >
       {/* Image Container */}
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
@@ -37,8 +37,8 @@ const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
           initial={{ y: 10 }}
           whileHover={{ y: 0 }}
         >
-          <div className="w-12 h-12 bg-primary flex items-center justify-center">
-            <ArrowUpRight className="w-5 h-5 text-primary-foreground" />
+          <div className="w-12 h-12 bg-accent flex items-center justify-center">
+            <ArrowUpRight className="w-5 h-5 text-accent-foreground" />
           </div>
         </motion.div>
 
@@ -52,7 +52,7 @@ const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="font-heading text-xl font-semibold mb-2 group-hover:text-primary transition-colors duration-300">
+        <h3 className="font-heading text-xl font-semibold mb-2 group-hover:text-accent transition-colors duration-300">
           {product.name}
         </h3>
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">

@@ -58,7 +58,7 @@ const LiveChat = () => {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-accent text-accent-foreground rounded-full shadow-lg flex items-center justify-center hover:bg-accent/90 transition-colors"
           >
             <MessageCircle size={24} />
           </motion.button>
@@ -80,14 +80,14 @@ const LiveChat = () => {
             className="fixed bottom-6 right-6 z-50 w-80 sm:w-96 bg-background border border-border shadow-elegant flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="bg-foreground text-background p-4 flex items-center justify-between">
+            <div className="bg-primary text-primary-foreground p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                  <MessageCircle size={20} className="text-primary-foreground" />
+                <div className="w-10 h-10 bg-primary-foreground/20 rounded-full flex items-center justify-center">
+                  <MessageCircle size={20} />
                 </div>
                 <div>
                   <div className="font-semibold">Sierra Aerospace</div>
-                  <div className="text-xs text-background/80 flex items-center gap-1">
+                  <div className="text-xs text-primary-foreground/80 flex items-center gap-1">
                     <span className="w-2 h-2 bg-green-400 rounded-full" />
                     Online
                   </div>
@@ -96,13 +96,13 @@ const LiveChat = () => {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
-                  className="p-1.5 hover:bg-background/10 rounded transition-colors"
+                  className="p-1.5 hover:bg-primary-foreground/10 rounded transition-colors"
                 >
                   <Minimize2 size={16} />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 hover:bg-background/10 rounded transition-colors"
+                  className="p-1.5 hover:bg-primary-foreground/10 rounded transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -121,12 +121,12 @@ const LiveChat = () => {
                       <div
                         className={`max-w-[80%] p-3 ${
                           msg.isUser
-                            ? "bg-primary text-primary-foreground"
+                            ? "bg-accent text-accent-foreground"
                             : "bg-background border border-border text-foreground"
                         }`}
                       >
                         <p className="text-sm">{msg.text}</p>
-                        <p className={`text-xs mt-1 ${msg.isUser ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                        <p className={`text-xs mt-1 ${msg.isUser ? "text-accent-foreground/70" : "text-muted-foreground"}`}>
                           {msg.time}
                         </p>
                       </div>
@@ -143,11 +143,11 @@ const LiveChat = () => {
                       onChange={(e) => setMessage(e.target.value)}
                       onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                       placeholder="Type your message..."
-                      className="flex-1 px-3 py-2 bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+                      className="flex-1 px-3 py-2 bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:border-accent"
                     />
                     <Button
                       onClick={sendMessage}
-                      variant="blue"
+                      variant="gold"
                       size="icon"
                       className="shrink-0"
                     >

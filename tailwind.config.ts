@@ -63,9 +63,8 @@ export default {
         },
         brand: {
           navy: "hsl(var(--brand-navy))",
-          blue: "hsl(var(--brand-blue))",
+          gold: "hsl(var(--brand-gold))",
           slate: "hsl(var(--brand-slate))",
-          "light-blue": "hsl(var(--brand-light-blue))",
         },
       },
       borderRadius: {

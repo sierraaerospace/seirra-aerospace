@@ -53,7 +53,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
             {/* Content Section */}
             <div className="flex-1 p-6 md:p-8 lg:p-12 overflow-y-auto">
               {/* Category */}
-              <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-sm font-semibold mb-4 tracking-wide">
+              <span className="inline-block px-3 py-1 bg-accent/10 text-accent text-sm font-semibold mb-4 tracking-wide">
                 {product.category}
               </span>
 
@@ -93,8 +93,8 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                 <ul className="space-y-3">
                   {product.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <div className="w-5 h-5 bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Check className="w-3 h-3 text-primary" />
+                      <div className="w-5 h-5 bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="w-3 h-3 text-accent" />
                       </div>
                       <span className="text-foreground/80">{feature}</span>
                     </li>
@@ -104,7 +104,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
               {/* CTA */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
-                <Button variant="blue" size="lg" className="flex-1">
+                <Button variant="gold" size="lg" className="flex-1">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Request Quote
                 </Button>

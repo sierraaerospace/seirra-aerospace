@@ -33,7 +33,7 @@ const ContactSection = () => {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <span className="text-primary text-sm font-semibold tracking-widest uppercase mb-4 block">
+            <span className="text-accent text-sm font-semibold tracking-widest uppercase mb-4 block">
               Get in Touch
             </span>
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground">
@@ -58,8 +58,8 @@ const ContactSection = () => {
                   transition={{ delay: 0.3 + i * 0.1, duration: 0.6 }}
                   className="flex items-center gap-4 p-4 bg-background border border-border"
                 >
-                  <div className="w-12 h-12 bg-primary/10 flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-primary" />
+                  <div className="w-12 h-12 bg-accent/10 flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-accent" />
                   </div>
                   <div>
                     <div className="text-sm text-muted-foreground">{item.label}</div>
@@ -101,7 +101,7 @@ const ContactSection = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="John Smith"
-                    className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
                 <div>
@@ -112,7 +112,7 @@ const ContactSection = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="john@company.com"
-                    className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
               </div>
@@ -124,7 +124,7 @@ const ContactSection = () => {
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   placeholder="Your company name"
-                  className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                  className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
                 />
               </div>
               
@@ -136,11 +136,11 @@ const ContactSection = () => {
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   placeholder="Tell us about your project requirements, quantities, or any questions..."
-                  className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
+                  className="w-full px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors resize-none"
                 />
               </div>
               
-              <Button type="submit" variant="blue" size="lg" className="w-full">
+              <Button type="submit" variant="gold" size="lg" className="w-full">
                 <Send className="w-4 h-4 mr-2" />
                 Send Message
               </Button>
