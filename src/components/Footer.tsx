@@ -32,10 +32,10 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <img 
+            <img 
                 src={sierraLogo} 
                 alt="Sierra Aerospace" 
-                className="h-14 w-auto object-contain brightness-0 invert"
+                className="h-14 w-auto object-contain"
               />
             </div>
             <p className="text-primary-foreground/70 mb-6 max-w-xs leading-relaxed">
