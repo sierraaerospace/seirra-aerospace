@@ -1,6 +1,5 @@
-import { motion } from "framer-motion";
 import { Linkedin, Twitter, Youtube, Mail } from "lucide-react";
-
+import sierraLogo from "@/assets/sierra-logo.jpeg";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -33,14 +32,15 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <span className="font-heading text-2xl font-bold">Sierra</span>
-              <span className="text-xs tracking-[0.3em] uppercase block text-primary-foreground/70">
-                Aerospace
-              </span>
+              <img 
+                src={sierraLogo} 
+                alt="Sierra Aerospace" 
+                className="h-14 w-auto object-contain brightness-0 invert"
+              />
             </div>
             <p className="text-primary-foreground/70 mb-6 max-w-xs leading-relaxed">
               Precision avionics solutions for professional UAV applications. 
-              Trusted by organizations in over 50 countries worldwide.
+              Engineering excellence for modern aviation.
             </p>
             {/* Social Links */}
             <div className="flex gap-3">

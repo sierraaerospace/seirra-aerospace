@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "./ui/button";
-
+import sierraLogo from "@/assets/sierra-logo.jpeg";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -37,15 +37,12 @@ const Navbar = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-3">
-            <div className="flex flex-col">
-              <span className="font-heading text-2xl font-bold text-foreground tracking-tight">
-                Sierra
-              </span>
-              <span className="text-xs font-body text-muted-foreground tracking-[0.3em] uppercase -mt-1">
-                Aerospace
-              </span>
-            </div>
+          <a href="#home" className="flex items-center">
+            <img 
+              src={sierraLogo} 
+              alt="Sierra Aerospace" 
+              className="h-12 w-auto object-contain"
+            />
           </a>
 
           {/* Desktop Nav */}
