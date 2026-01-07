@@ -58,8 +58,8 @@ const WhyUsSection = () => {
             {/* Stats */}
             <div className="grid grid-cols-2 gap-6">
               <div className="border-l-4 border-accent pl-4">
-                <div className="text-3xl font-heading font-bold text-foreground">500+</div>
-                <div className="text-sm text-muted-foreground">Global Partners</div>
+                <div className="text-3xl font-heading font-bold text-foreground">15+</div>
+                <div className="text-sm text-muted-foreground">Product Lines</div>
               </div>
               <div className="border-l-4 border-accent pl-4">
                 <div className="text-3xl font-heading font-bold text-foreground">10+</div>
