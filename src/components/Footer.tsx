@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Linkedin, Twitter, Youtube, Mail } from "lucide-react";
+import logo from "@/assets/sierra-logo.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -32,22 +33,12 @@ const Footer = () => {
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="mb-6 flex items-center gap-2">
-              {/* Logo Icon */}
-              <svg 
-                viewBox="0 0 40 40" 
-                className="w-10 h-10 text-background"
-                fill="currentColor"
-              >
-                <rect x="2" y="2" width="36" height="36" fill="none" stroke="currentColor" strokeWidth="3"/>
-                <line x1="2" y1="38" x2="38" y2="2" stroke="currentColor" strokeWidth="3"/>
-              </svg>
-              <div className="flex flex-col">
-                <span className="font-heading text-2xl font-bold text-background">Sierra</span>
-                <span className="text-[10px] tracking-[0.25em] uppercase text-background/70 -mt-1">
-                  Aerospace
-                </span>
-              </div>
+            <div className="mb-6">
+              <img 
+                src={logo} 
+                alt="Sierra Aerospace" 
+                className="h-12 w-auto invert"
+              />
             </div>
             <p className="text-background/70 mb-6 max-w-xs leading-relaxed">
               Precision avionics solutions for professional UAV applications. 
