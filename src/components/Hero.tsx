@@ -24,19 +24,6 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="max-w-4xl">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 border border-primary/10 mb-8"
-          >
-            <span className="w-2 h-2 bg-accent rounded-full" />
-            <span className="text-sm font-medium text-foreground/80 tracking-wide">
-              Reliable Avionics for Your UAVs
-            </span>
-          </motion.div>
-
           {/* Main Title */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}

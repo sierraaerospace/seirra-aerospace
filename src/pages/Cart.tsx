@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, Package, LogOut } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, Package, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 
 interface CartItem {
@@ -16,44 +14,13 @@ interface CartItem {
 }
 
 const Cart = () => {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-      if (!session?.user) {
-        navigate("/login");
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-      if (!session?.user) {
-        navigate("/login");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({ title: "Logged out", description: "You have been successfully logged out." });
-    navigate("/");
+  const handleBuyNow = () => {
+    // Redirect to login for payment
+    navigate("/login");
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
@@ -66,10 +33,8 @@ const Cart = () => {
             <img src={sierraLogo} alt="Sierra Aerospace" className="h-12 w-auto" />
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{user?.email}</span>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut size={16} className="mr-2" />
-              Logout
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/login">Login</Link>
             </Button>
           </div>
         </div>
@@ -160,15 +125,27 @@ const Cart = () => {
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
               </div>
-              <Button variant="gold" className="w-full" disabled={cartItems.length === 0}>
-                Proceed to Checkout
+              <Button 
+                variant="gold" 
+                className="w-full" 
+                disabled={cartItems.length === 0}
+                onClick={handleBuyNow}
+              >
+                <CreditCard className="w-4 h-4 mr-2" />
+                Buy Now
               </Button>
+              <p className="text-xs text-muted-foreground text-center mt-3">
+                You'll be asked to login to complete your purchase
+              </p>
             </div>
 
             {/* Past Orders */}
             <div className="bg-background border border-border p-6 mt-6">
               <h2 className="font-heading text-xl font-semibold mb-4">Past Orders</h2>
-              <p className="text-muted-foreground text-sm">No previous orders found.</p>
+              <p className="text-muted-foreground text-sm">Login to view your order history.</p>
+              <Button variant="outline" size="sm" className="mt-4" asChild>
+                <Link to="/login">Login to View Orders</Link>
+              </Button>
             </div>
           </div>
         </div>

@@ -81,7 +81,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                   Technical Specifications
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {Object.entries(product.specs).map(([key, value]) => (
+                  {Object.entries(product.specs).slice(0, 4).map(([key, value]) => (
                     <div
                       key={key}
                       className="p-4 bg-secondary border border-border"
