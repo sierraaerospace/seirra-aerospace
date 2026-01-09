@@ -33,7 +33,7 @@ const Hero = () => {
           >
             <span className="w-2 h-2 bg-accent rounded-full" />
             <span className="text-sm font-medium text-foreground/80 tracking-wide">
-              Precision Avionics Systems
+              Reliable Avionics for Your UAVs
             </span>
           </motion.div>
 
@@ -72,9 +72,6 @@ const Hero = () => {
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </Button>
-            <Button variant="outline" size="xl" asChild>
-              <a href="#contact">Request Catalogue</a>
-            </Button>
           </motion.div>
 
           {/* Stats */}
@@ -82,12 +79,11 @@ const Hero = () => {
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-border"
+            className="grid grid-cols-3 gap-8 pt-8 border-t border-border"
           >
             {[
               { value: "±1cm", label: "RTK Precision" },
               { value: "15+", label: "Product Lines" },
-              { value: "99.9%", label: "Reliability Rate" },
               { value: "24/7", label: "Technical Support" },
             ].map((stat, i) => (
               <motion.div 

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ShoppingCart } from "lucide-react";
 import type { Product } from "@/data/products";
+import { Link } from "react-router-dom";
 
 interface ProductCardProps {
   product: Product;
@@ -9,6 +10,12 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Navigate to login/cart - user needs to be logged in to add to cart
+    window.location.href = "/login";
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -60,7 +67,7 @@ const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
         </p>
         
         {/* Key Specs */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-4">
           {Object.entries(product.specs).slice(0, 2).map(([key, value]) => (
             <span
               key={key}
@@ -70,6 +77,15 @@ const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
             </span>
           ))}
         </div>
+
+        {/* Add to Cart Button */}
+        <button
+          onClick={handleAddToCart}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-accent text-accent-foreground font-medium text-sm hover:bg-accent/90 transition-colors"
+        >
+          <ShoppingCart size={16} />
+          Add to Cart
+        </button>
       </div>
     </motion.div>
   );
