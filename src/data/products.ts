@@ -8,11 +8,9 @@ import truespeedV2 from "@/assets/products/truespeed-v2.jpg";
 import sierraF1Mini from "@/assets/products/sierra-f1-mini.jpg";
 import truepilot from "@/assets/products/truepilot.jpg";
 import navicore from "@/assets/products/navicore.jpg";
-import smartBms from "@/assets/products/smart-bms.jpg";
-import pulseEsc from "@/assets/products/pulse-esc.jpg";
 import micronavFpv from "@/assets/products/micronav-fpv.jpg";
 
-export type ProductCategory = "RTK GPS" | "GPS/GNSS" | "Autopilots" | "Sensors" | "Power" | "ESC";
+export type ProductCategory = "RTK GPS" | "GPS/GNSS" | "Autopilots" | "Sensors";
 
 export interface Product {
   id: string;
@@ -251,52 +249,6 @@ export const products: Product[] = [
     }
   },
   {
-    id: "smart-bms",
-    name: "Sierra 6S Smart BMS",
-    category: "Power",
-    image: smartBms,
-    tagline: "Smart BMS with dual 5V 3A regulators",
-    features: [
-      "Supports 4S-6S Li-ion and Li-Po",
-      "Auto-cell balancing with CC-CV adaptive charging",
-      "Over-voltage, over-current protections",
-      "Overcharge, over-discharge, short circuit protection",
-      "SMBus and CANBus communication",
-      "5x LED array with 10% SoC display",
-      "SoC, SoH, sleep mode",
-      "Pre-charge, Pre-discharge circuit"
-    ],
-    specs: {
-      "Continuous Current": "30A",
-      "Peak Current": "70A",
-      "Battery": "4S-6S Li-ion/Li-Po",
-      "Communication": "SMBus, CANBus"
-    }
-  },
-  {
-    id: "pulse-esc",
-    name: "Sierra Pulse ESC",
-    category: "ESC",
-    image: pulseEsc,
-    tagline: "High-performance DroneCAN ESC",
-    features: [
-      "DShot 150/300/600/1200, Proshot/PWM, UAVCAN/DroneCAN",
-      "ESC telemetry via BDSHOT, DroneCAN or UART",
-      "Onboard current sensor",
-      "Firmware update via DroneCAN",
-      "High quality ceramic capacitors",
-      "Outputs for Navigation LEDs, Debug, spare UART"
-    ],
-    specs: {
-      "12S Continuous": "35A",
-      "12S Burst": "60A",
-      "6S Continuous": "55A",
-      "6S Burst": "70A",
-      "Weight": "10g",
-      "Dimensions": "27x45mm"
-    }
-  },
-  {
     id: "micronav-fpv",
     name: "Sierra MicroNav FPV",
     category: "GPS/GNSS",
@@ -316,4 +268,4 @@ export const products: Product[] = [
   }
 ];
 
-export const categories: ProductCategory[] = ["RTK GPS", "GPS/GNSS", "Autopilots", "Sensors", "Power", "ESC"];
+export const categories: ProductCategory[] = ["RTK GPS", "GPS/GNSS", "Autopilots", "Sensors"];
