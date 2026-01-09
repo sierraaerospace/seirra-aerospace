@@ -4,9 +4,7 @@ import precisionpointSe from "@/assets/products/precisionpoint-se.jpg";
 import truenavPro from "@/assets/products/truenav-pro.jpg";
 import truenavic from "@/assets/products/truenavic.jpg";
 import truenavMini from "@/assets/products/truenav-mini.jpg";
-import truenorthTruespeed from "@/assets/products/truenorth-truespeed.jpg";
 import truespeedV2 from "@/assets/products/truespeed-v2.jpg";
-import sierraF1 from "@/assets/products/sierra-f1.jpg";
 import sierraF1Mini from "@/assets/products/sierra-f1-mini.jpg";
 import truepilot from "@/assets/products/truepilot.jpg";
 import navicore from "@/assets/products/navicore.jpg";
@@ -161,28 +159,6 @@ export const products: Product[] = [
     }
   },
   {
-    id: "truenorth-truespeed",
-    name: "Sierra TrueNorth / TrueSpeed",
-    category: "Sensors",
-    image: truenorthTruespeed,
-    tagline: "Precision magnetometer & airspeed sensor",
-    features: [
-      "Ultra-low power consumption MCU",
-      "Industrial PNICorp RM3100 Magnetometer",
-      "DLVR-L10D high precision pressure sensors",
-      "DroneCAN communication protocol",
-      "Operating Temperature -40°C to +85°C"
-    ],
-    specs: {
-      "Mag Noise": "15nT",
-      "Mag Sensitivity": "13nT",
-      "Speed Range": "±250 km/h",
-      "Power": "5V, 30mA",
-      "Weight": "2.5g",
-      "Dimensions": "25x25mm"
-    }
-  },
-  {
     id: "truespeed-v2",
     name: "Sierra TrueSpeed V2",
     category: "Sensors",
@@ -201,30 +177,6 @@ export const products: Product[] = [
       "Operating Temp": "-40°C to +85°C",
       "Weight": "2.5g",
       "Dimensions": "23x25mm"
-    }
-  },
-  {
-    id: "sierra-f1",
-    name: "Sierra F1 Autopilot",
-    category: "Autopilots",
-    image: sierraF1,
-    tagline: "High-performance modular autopilot",
-    features: [
-      "Cortex®-M7 core with double-precision FPU",
-      "480 MHz CPU, 2MB Flash, 1MB RAM, 32MB QSPI",
-      "Internally damped Bosch BMI088, TDK ICM42688-P",
-      "DPS310 Barometer",
-      "Dual CAN-FD drivers",
-      "Dual redundant input power with 4A rating",
-      "6x PWM channels with DSHOT capability",
-      "Supports Ardupilot"
-    ],
-    specs: {
-      "CPU": "480 MHz Cortex-M7",
-      "UARTs": "4x (2x with HW flow control)",
-      "I2C": "2x",
-      "Weight": "15g",
-      "Dimensions": "35x45mm"
     }
   },
   {
