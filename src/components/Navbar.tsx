@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, ShoppingCart, User } from "lucide-react";
 import { Button } from "./ui/button";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
+import { Link } from "react-router-dom";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -41,7 +43,7 @@ const Navbar = () => {
             <img 
               src={sierraLogo} 
               alt="Sierra Aerospace" 
-              className="h-12 w-auto object-contain"
+              className="h-16 w-auto object-contain"
             />
           </a>
 
@@ -61,12 +63,15 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center gap-4">
-            <a href="tel:+15551234567" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <Phone size={16} />
-              <span>+1 (555) 123-4567</span>
-            </a>
+            <Link to="/cart" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ShoppingCart size={20} />
+              <span>Cart</span>
+            </Link>
             <Button variant="gold" size="default" asChild>
-              <a href="#contact">Get Quote</a>
+              <Link to="/login" className="flex items-center gap-2">
+                <User size={16} />
+                Login
+              </Link>
             </Button>
           </div>
 
@@ -100,9 +105,16 @@ const Navbar = () => {
                   {item.label}
                 </a>
               ))}
-              <div className="pt-4 border-t border-border">
+              <div className="pt-4 border-t border-border flex flex-col gap-3">
+                <Link to="/cart" onClick={() => setIsOpen(false)} className="flex items-center gap-2 text-foreground hover:text-accent py-2">
+                  <ShoppingCart size={20} />
+                  <span>Cart</span>
+                </Link>
                 <Button variant="gold" className="w-full" asChild>
-                  <a href="#contact">Get Quote</a>
+                  <Link to="/login" onClick={() => setIsOpen(false)}>
+                    <User size={16} className="mr-2" />
+                    Login
+                  </Link>
                 </Button>
               </div>
             </div>

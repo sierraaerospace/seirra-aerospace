@@ -37,19 +37,19 @@ const ContactSection = () => {
               Get in Touch
             </span>
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground">
-              Let's Discuss Your Project
+              Connect With Us
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-10">
-              Contact our sales team for product specifications, bulk pricing, 
-              or custom integration support. We respond within 24 hours.
+              Contact our team for product specifications, pricing, 
+              or technical support. We're here to help.
             </p>
 
             {/* Contact Cards */}
             <div className="space-y-4 mb-10">
               {[
-                { icon: Mail, label: "Email", value: "sales@sierraaerospace.com" },
-                { icon: Phone, label: "Phone", value: "+1 (555) 123-4567" },
-                { icon: MapPin, label: "Headquarters", value: "Silicon Valley, California, USA" }
+                { icon: Phone, label: "Phone", value: "+91 78929 06828" },
+                { icon: Mail, label: "Email", value: "info[@] sierraaerospace.in" },
+                { icon: MapPin, label: "Address", value: "56,10th Main, Sector-1\nNOBO Nagar, BG Road\nBengaluru- 560076" }
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -63,7 +63,7 @@ const ContactSection = () => {
                   </div>
                   <div>
                     <div className="text-sm text-muted-foreground">{item.label}</div>
-                    <div className="font-medium text-foreground">{item.value}</div>
+                    <div className="font-medium text-foreground whitespace-pre-line">{item.value}</div>
                   </div>
                 </motion.div>
               ))}
@@ -73,8 +73,8 @@ const ContactSection = () => {
             <div className="p-6 bg-primary text-primary-foreground">
               <h4 className="font-heading font-semibold mb-2">Business Hours</h4>
               <p className="text-primary-foreground/80 text-sm">
-                Monday - Friday: 9:00 AM - 6:00 PM (PST)<br />
-                Technical Support: 24/7 for enterprise customers
+                Monday - Saturday: 9:00 AM - 6:00 PM (IST)<br />
+                Technical Support: Available during business hours
               </p>
             </div>
           </motion.div>
@@ -88,7 +88,7 @@ const ContactSection = () => {
             className="bg-background border border-border p-8 md:p-10"
           >
             <h3 className="font-heading text-2xl font-semibold mb-6 text-foreground">
-              Request a Quote
+              Send us a Message
             </h3>
             
             <div className="space-y-6">
