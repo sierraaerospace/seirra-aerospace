@@ -24,11 +24,8 @@ const ProductCatalogue = () => {
           transition={{ duration: 0.8 }}
           className="max-w-3xl mb-16"
         >
-          <span className="text-accent text-sm font-semibold tracking-widest uppercase mb-4 block">
-            Product Catalogue
-          </span>
           <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6 text-foreground">
-            Precision Avionics Solutions
+            Product Catalogue
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
             Explore our comprehensive range of RTK GPS modules, autopilots, sensors, 

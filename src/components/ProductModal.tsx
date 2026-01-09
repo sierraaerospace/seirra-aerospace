@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Download, MessageCircle } from "lucide-react";
+import { X, Check, Download, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import type { Product } from "@/data/products";
+import { useNavigate } from "react-router-dom";
 
 interface ProductModalProps {
   product: Product | null;
@@ -9,7 +10,14 @@ interface ProductModalProps {
 }
 
 const ProductModal = ({ product, onClose }: ProductModalProps) => {
+  const navigate = useNavigate();
+  
   if (!product) return null;
+
+  const handleAddToCart = () => {
+    // TODO: Add to cart logic
+    navigate("/cart");
+  };
 
   return (
     <AnimatePresence>
@@ -104,13 +112,13 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
               {/* CTA */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
-                <Button variant="gold" size="lg" className="flex-1">
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Request Quote
-                </Button>
                 <Button variant="outline" size="lg" className="flex-1">
                   <Download className="w-4 h-4 mr-2" />
                   Download Datasheet
+                </Button>
+                <Button variant="gold" size="lg" className="flex-1" onClick={handleAddToCart}>
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Add to Cart
                 </Button>
               </div>
             </div>
