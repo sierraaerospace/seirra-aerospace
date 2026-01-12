@@ -46,8 +46,8 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get the redirect path from state, default to /cart
-  const from = (location.state as { from?: string })?.from || "/cart";
+  // Get the redirect path from state, default to home
+  const from = (location.state as { from?: string })?.from || "/";
 
   // Check if user is already logged in
   useEffect(() => {
