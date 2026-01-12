@@ -1,4 +1,4 @@
-import { Linkedin, Twitter, Instagram } from "lucide-react";
+import { Linkedin, Twitter, Instagram, MessageCircle } from "lucide-react";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 import { Link } from "react-router-dom";
 
@@ -38,6 +38,7 @@ const Footer = () => {
                 { icon: Linkedin, href: "https://www.linkedin.com/company/sierra-aerospace" },
                 { icon: Twitter, href: "https://twitter.com/sierraaerospace" },
                 { icon: Instagram, href: "https://www.instagram.com/sierraaerospace" },
+                { icon: MessageCircle, href: "https://wa.me/917892906828" },
               ].map((social, i) => (
                 <a
                   key={i}
