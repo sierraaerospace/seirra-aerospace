@@ -10,8 +10,8 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const handleBuyNow = () => {
-    // Redirect to login for payment
-    navigate("/login");
+    // Redirect to login with cart as the return destination
+    navigate("/login", { state: { from: "/cart" } });
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);

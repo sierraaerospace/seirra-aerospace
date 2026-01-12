@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
@@ -16,6 +16,21 @@ const Login = () => {
     name: ""
   });
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the redirect path from state, default to /cart
+  const from = (location.state as { from?: string })?.from || "/cart";
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate(from, { replace: true });
+      }
+    };
+    checkSession();
+  }, [navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +44,7 @@ const Login = () => {
         });
         if (error) throw error;
         toast({ title: "Welcome back!", description: "You have successfully logged in." });
-        navigate("/orders");
+        navigate(from, { replace: true });
       } else {
         const { error } = await supabase.auth.signUp({
           email: formData.email,
