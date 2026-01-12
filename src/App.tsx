@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
+import OrderHistory from "./pages/OrderHistory";
 import Warranty from "./pages/Warranty";
 import ShippingReturns from "./pages/ShippingReturns";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/orders" element={<OrderHistory />} />
             <Route path="/warranty" element={<Warranty />} />
             <Route path="/shipping-returns" element={<ShippingReturns />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />

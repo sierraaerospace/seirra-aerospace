@@ -141,10 +141,10 @@ const Cart = () => {
 
             {/* Past Orders */}
             <div className="bg-background border border-border p-6 mt-6">
-              <h2 className="font-heading text-xl font-semibold mb-4">Past Orders</h2>
-              <p className="text-muted-foreground text-sm">Login to view your order history.</p>
+              <h2 className="font-heading text-xl font-semibold mb-4">Order History</h2>
+              <p className="text-muted-foreground text-sm">View your past orders, track shipments, and download invoices.</p>
               <Button variant="outline" size="sm" className="mt-4" asChild>
-                <Link to="/login">Login to View Orders</Link>
+                <Link to="/orders">View Order History</Link>
               </Button>
             </div>
           </div>

@@ -29,7 +29,7 @@ const Login = () => {
         });
         if (error) throw error;
         toast({ title: "Welcome back!", description: "You have successfully logged in." });
-        navigate("/cart");
+        navigate("/orders");
       } else {
         const { error } = await supabase.auth.signUp({
           email: formData.email,
