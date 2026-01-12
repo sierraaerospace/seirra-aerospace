@@ -3,6 +3,8 @@ import { X, Check, Download, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import type { Product } from "@/data/products";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 
 interface ProductModalProps {
   product: Product | null;
@@ -11,11 +13,13 @@ interface ProductModalProps {
 
 const ProductModal = ({ product, onClose }: ProductModalProps) => {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   
   if (!product) return null;
 
   const handleAddToCart = () => {
-    // TODO: Add to cart logic
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
     navigate("/cart");
   };
 

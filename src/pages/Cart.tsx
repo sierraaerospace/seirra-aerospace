@@ -1,20 +1,12 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, Package, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
-
-interface CartItem {
-  id: string;
-  product_name: string;
-  product_image: string;
-  quantity: number;
-  price: number;
-}
+import { useCart } from "@/contexts/CartContext";
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
 
   const handleBuyNow = () => {
@@ -88,15 +80,24 @@ const Cart = () => {
                       <p className="text-accent font-medium">${item.price.toFixed(2)}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button className="w-8 h-8 border border-border flex items-center justify-center hover:bg-secondary">
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-8 h-8 border border-border flex items-center justify-center hover:bg-secondary"
+                      >
                         <Minus size={14} />
                       </button>
                       <span className="w-8 text-center">{item.quantity}</span>
-                      <button className="w-8 h-8 border border-border flex items-center justify-center hover:bg-secondary">
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="w-8 h-8 border border-border flex items-center justify-center hover:bg-secondary"
+                      >
                         <Plus size={14} />
                       </button>
                     </div>
-                    <button className="text-muted-foreground hover:text-destructive transition-colors">
+                    <button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-muted-foreground hover:text-destructive transition-colors"
+                    >
                       <Trash2 size={18} />
                     </button>
                   </motion.div>
