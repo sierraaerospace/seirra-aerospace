@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingCart, User } from "lucide-react";
 import { Button } from "./ui/button";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,11 +69,16 @@ const Navbar = () => {
               <span>Cart</span>
             </Link>
             <Button variant="gold" size="default" asChild>
-              <Link to="/login" className="flex items-center gap-2">
+              <Link
+                to="/login"
+                state={{ from: location.pathname + location.search }}
+                className="flex items-center gap-2"
+              >
                 <User size={16} />
                 Login
               </Link>
             </Button>
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -111,11 +117,16 @@ const Navbar = () => {
                   <span>Cart</span>
                 </Link>
                 <Button variant="gold" className="w-full" asChild>
-                  <Link to="/login" onClick={() => setIsOpen(false)}>
+                  <Link
+                    to="/login"
+                    state={{ from: location.pathname + location.search }}
+                    onClick={() => setIsOpen(false)}
+                  >
                     <User size={16} className="mr-2" />
                     Login
                   </Link>
                 </Button>
+
               </div>
             </div>
           </motion.div>
