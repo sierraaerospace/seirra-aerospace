@@ -20,6 +20,7 @@ export interface Product {
   tagline: string;
   features: string[];
   specs: Record<string, string>;
+  datasheet?: string;
 }
 
 export const products: Product[] = [
@@ -44,7 +45,8 @@ export const products: Product[] = [
       "Power": "5V, 250mA max",
       "Weight": "15g",
       "Dimensions": "33x45mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra_PrecisionPoint_series.pdf"
   },
   {
     id: "precisionpoint-base",
@@ -67,7 +69,8 @@ export const products: Product[] = [
       "Power": "5V, 250mA max",
       "Weight": "15g",
       "Dimensions": "33x45mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra_PrecisionPoint_series.pdf"
   },
   {
     id: "precisionpoint-se",
@@ -89,7 +92,8 @@ export const products: Product[] = [
       "Power": "5V, 250mA max",
       "Weight": "35.5g",
       "Dimensions": "55x57mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra_RTK_PPK.pdf"
   },
   {
     id: "truenav-pro",
@@ -111,7 +115,8 @@ export const products: Product[] = [
       "Power": "5V, 100mA max",
       "Weight": "15-19g",
       "Dimensions": "50×47mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra_TrueNav.pdf"
   },
   {
     id: "truenavic",
@@ -133,7 +138,8 @@ export const products: Product[] = [
       "Power": "5V, 100mA max",
       "Weight": "25g",
       "Dimensions": "50×47mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra_TrueNavIC-Pro.pdf"
   },
   {
     id: "truenav-mini",
@@ -154,7 +160,8 @@ export const products: Product[] = [
       "Power": "5V, 100mA max",
       "Weight": "17g",
       "Dimensions": "41x43mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra_TrueNav.pdf"
   },
   {
     id: "truespeed-v2",
@@ -198,7 +205,8 @@ export const products: Product[] = [
       "UARTs": "4x (2x with HW flow control)",
       "Weight": "10g",
       "Dimensions": "35x35mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra-F1-Mini_V2.pdf"
   },
   {
     id: "truepilot",
@@ -222,7 +230,8 @@ export const products: Product[] = [
       "CAN": "1x CAN-FD",
       "Weight": "21-27g",
       "Dimensions": "45x47mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra-TruePilot.pdf"
   },
   {
     id: "navicore",
@@ -264,7 +273,8 @@ export const products: Product[] = [
       "Power": "5V, 100mA max",
       "Weight": "12.5g",
       "Dimensions": "25x33mm"
-    }
+    },
+    datasheet: "/datasheets/Sierra-MicroNav-FPV.pdf"
   }
 ];
 

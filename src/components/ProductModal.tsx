@@ -112,10 +112,24 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
               {/* CTA */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
-                <Button variant="outline" size="lg" className="flex-1">
-                  <Download className="w-4 h-4 mr-2" />
-                  Download Datasheet
-                </Button>
+                {product.datasheet ? (
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="flex-1"
+                    asChild
+                  >
+                    <a href={product.datasheet} target="_blank" rel="noopener noreferrer" download>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Datasheet
+                    </a>
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="lg" className="flex-1" disabled>
+                    <Download className="w-4 h-4 mr-2" />
+                    Datasheet Unavailable
+                  </Button>
+                )}
                 <Button variant="gold" size="lg" className="flex-1" onClick={handleAddToCart}>
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Add to Cart
