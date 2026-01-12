@@ -88,11 +88,21 @@ const OrderHistory = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Set up auth state listener BEFORE checking session
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/login", { state: { from: "/orders" } });
+      } else if (event === 'SIGNED_IN') {
+        fetchOrders();
+      }
+    });
+
+    // Then check current session
     const checkAuthAndFetchOrders = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        navigate("/login");
+        navigate("/login", { state: { from: "/orders" } });
         return;
       }
 
@@ -100,6 +110,8 @@ const OrderHistory = () => {
     };
 
     checkAuthAndFetchOrders();
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const fetchOrders = async () => {
