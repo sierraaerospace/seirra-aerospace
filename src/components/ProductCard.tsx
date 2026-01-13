@@ -56,9 +56,16 @@ const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
         <h3 className="font-heading text-xl font-semibold mb-2 group-hover:text-accent transition-colors duration-300">
           {product.name}
         </h3>
-        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+        <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
           {product.tagline}
         </p>
+
+        {/* Price */}
+        {product.price && (
+          <p className="text-lg font-bold text-accent mb-4">
+            ₹{product.price.toLocaleString("en-IN")}
+          </p>
+        )}
         
         {/* Key Specs */}
         <div className="flex flex-wrap gap-2">

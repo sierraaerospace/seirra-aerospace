@@ -31,8 +31,8 @@ const Hero = () => {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold mb-6 leading-[1.1] text-balance"
           >
-            Precision Avionics for{" "}
-            <span className="text-accent">Global Excellence</span>
+            Enabling Reliable Autonomy{" "}
+            <span className="text-accent">in the Air</span>
           </motion.h1>
 
           {/* Subtitle */}
