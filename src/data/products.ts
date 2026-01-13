@@ -21,6 +21,7 @@ export interface Product {
   features: string[];
   specs: Record<string, string>;
   datasheet?: string;
+  price?: number;
 }
 
 export const products: Product[] = [
@@ -46,7 +47,8 @@ export const products: Product[] = [
       "Weight": "15g",
       "Dimensions": "33x45mm"
     },
-    datasheet: "/datasheets/Sierra_PrecisionPoint_series.pdf"
+    datasheet: "/datasheets/Sierra_PrecisionPoint_series.pdf",
+    price: 24999
   },
   {
     id: "precisionpoint-base",
@@ -70,7 +72,8 @@ export const products: Product[] = [
       "Weight": "15g",
       "Dimensions": "33x45mm"
     },
-    datasheet: "/datasheets/Sierra_PrecisionPoint_series.pdf"
+    datasheet: "/datasheets/Sierra_PrecisionPoint_series.pdf",
+    price: 22499
   },
   {
     id: "precisionpoint-se",
@@ -93,7 +96,8 @@ export const products: Product[] = [
       "Weight": "35.5g",
       "Dimensions": "55x57mm"
     },
-    datasheet: "/datasheets/Sierra_RTK_PPK.pdf"
+    datasheet: "/datasheets/Sierra_RTK_PPK.pdf",
+    price: 24999
   },
   {
     id: "truenav-pro",
@@ -139,7 +143,8 @@ export const products: Product[] = [
       "Weight": "25g",
       "Dimensions": "50×47mm"
     },
-    datasheet: "/datasheets/Sierra_TrueNavIC-Pro.pdf"
+    datasheet: "/datasheets/Sierra_TrueNavIC-Pro.pdf",
+    price: 20999
   },
   {
     id: "truenav-mini",
@@ -161,7 +166,8 @@ export const products: Product[] = [
       "Weight": "17g",
       "Dimensions": "41x43mm"
     },
-    datasheet: "/datasheets/Sierra_TrueNav.pdf"
+    datasheet: "/datasheets/Sierra_TrueNav.pdf",
+    price: 14999
   },
   {
     id: "truespeed-v2",
@@ -182,7 +188,8 @@ export const products: Product[] = [
       "Operating Temp": "-40°C to +85°C",
       "Weight": "2.5g",
       "Dimensions": "23x25mm"
-    }
+    },
+    price: 12499
   },
   {
     id: "sierra-f1-mini",
@@ -206,7 +213,8 @@ export const products: Product[] = [
       "Weight": "10g",
       "Dimensions": "35x35mm"
     },
-    datasheet: "/datasheets/Sierra-F1-Mini_V2.pdf"
+    datasheet: "/datasheets/Sierra-F1-Mini_V2.pdf",
+    price: 21999
   },
   {
     id: "truepilot",
@@ -255,7 +263,8 @@ export const products: Product[] = [
       "GPIO": "2x",
       "Weight": "19-27g",
       "Dimensions": "50x50mm"
-    }
+    },
+    price: 4999
   },
   {
     id: "micronav-fpv",
