@@ -120,7 +120,8 @@ export const products: Product[] = [
       "Weight": "15-19g",
       "Dimensions": "50×47mm"
     },
-    datasheet: "/datasheets/Sierra_TrueNav.pdf"
+    datasheet: "/datasheets/Sierra_TrueNav.pdf",
+    price: 19999
   },
   {
     id: "truenavic",
@@ -263,8 +264,7 @@ export const products: Product[] = [
       "GPIO": "2x",
       "Weight": "19-27g",
       "Dimensions": "50x50mm"
-    },
-    price: 4999
+    }
   },
   {
     id: "micronav-fpv",
@@ -283,7 +283,8 @@ export const products: Product[] = [
       "Weight": "12.5g",
       "Dimensions": "25x33mm"
     },
-    datasheet: "/datasheets/Sierra-MicroNav-FPV.pdf"
+    datasheet: "/datasheets/Sierra-MicroNav-FPV.pdf",
+    price: 4999
   }
 ];
 

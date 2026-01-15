@@ -81,9 +81,12 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
               {/* Price */}
               {product.price && (
-                <p className="text-2xl font-bold text-accent mb-8">
-                  ₹{product.price.toLocaleString("en-IN")}
-                </p>
+                <div className="mb-8">
+                  <p className="text-2xl font-bold text-accent">
+                    ₹{product.price.toLocaleString("en-IN")}
+                    <span className="text-sm font-normal text-muted-foreground ml-2">price per unit</span>
+                  </p>
+                </div>
               )}
 
               {/* Specifications */}
