@@ -77,7 +77,7 @@ const Cart = () => {
                     />
                     <div className="flex-1">
                       <h3 className="font-heading font-semibold">{item.product_name}</h3>
-                      <p className="text-accent font-medium">${item.price.toFixed(2)}</p>
+                      <p className="text-accent font-medium">₹{item.price.toLocaleString("en-IN")}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button 
@@ -113,7 +113,7 @@ const Cart = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -123,7 +123,7 @@ const Cart = () => {
               <div className="border-t border-border pt-4 mb-6">
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
               </div>
               <Button 
