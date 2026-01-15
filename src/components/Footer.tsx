@@ -135,11 +135,13 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="py-6 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <img 
-              src={sierraLogo} 
-              alt="Sierra Aerospace" 
-              className="h-10 w-auto object-contain"
-            />
+            <div className="bg-white rounded-lg p-1">
+              <img 
+                src={sierraLogo} 
+                alt="Sierra Aerospace" 
+                className="h-10 w-auto object-contain"
+              />
+            </div>
           </div>
           <p className="text-sm text-primary-foreground/60">
             © 2019 - {currentYear} - Signific Systems, All Rights Reserved

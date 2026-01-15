@@ -61,11 +61,11 @@ const ProductCard = ({ product, index, onSelect }: ProductCardProps) => {
         </p>
         
         {/* Key Specs */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2">
           {Object.entries(product.specs).slice(0, 2).map(([key, value]) => (
             <span
               key={key}
-              className="px-2.5 py-1 bg-secondary text-xs font-medium text-foreground/80"
+              className="px-2.5 py-1 bg-secondary text-xs font-medium text-foreground/80 w-fit"
             >
               {key}: {value}
             </span>
