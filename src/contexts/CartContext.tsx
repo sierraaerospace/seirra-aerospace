@@ -47,7 +47,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           product_name: product.name,
           product_image: product.image,
           quantity: 1,
-          price: 0, // Price to be determined
+          price: product.price || 0,
         },
       ];
     });
