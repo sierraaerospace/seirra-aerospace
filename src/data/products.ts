@@ -125,7 +125,7 @@ export const products: Product[] = [
   },
   {
     id: "truenavic",
-    name: "Sierra TrueNavIC",
+    name: "Sierra TrueNavIC-Pro",
     category: "GPS/GNSS",
     image: truenavic,
     tagline: "NavIC-based GNSS system",
