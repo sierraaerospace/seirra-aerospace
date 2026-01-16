@@ -1,5 +1,5 @@
 import { Linkedin, Twitter, Instagram } from "lucide-react";
-import sierraLogo from "@/assets/sierra-logo-transparent.png";
+import sierraLogo from "@/assets/sierra-logo.jpeg";
 import { Link } from "react-router-dom";
 
 // Custom WhatsApp icon since Lucide doesn't have one
@@ -50,7 +50,7 @@ const Footer = () => {
               {[
                 { icon: Linkedin, href: "https://www.linkedin.com/company/sierra-aerospace" },
                 { icon: Twitter, href: "https://twitter.com/sierraaerospace" },
-                { icon: Instagram, href: "https://www.instagram.com/sierraaerospace" },
+                { icon: Instagram, href: "https://www.instagram.com/sierra_aerospace/" },
                 { icon: WhatsAppIcon, href: "https://wa.me/917892906828" },
               ].map((social, i) => (
                 <a
@@ -135,11 +135,13 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="py-6 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <img 
-              src={sierraLogo} 
-              alt="Sierra Aerospace" 
-              className="h-10 w-auto object-contain invert brightness-0 invert"
-            />
+            <div className="bg-white rounded-lg p-1">
+              <img 
+                src={sierraLogo} 
+                alt="Sierra Aerospace" 
+                className="h-10 w-auto object-contain"
+              />
+            </div>
           </div>
           <p className="text-sm text-primary-foreground/60">
             © 2019 - {currentYear} - Signific Systems, All Rights Reserved
