@@ -33,7 +33,6 @@ const Footer = () => {
     ],
     technicals: [
       { label: "CAD Models", href: "#" },
-      { label: "Datasheets", href: "#" },
       { label: "Firmware", href: "#" },
     ],
   };
