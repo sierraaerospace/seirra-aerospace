@@ -40,7 +40,7 @@ const LiveChat = () => {
     setTimeout(() => {
       const response: Message = {
         id: Date.now() + 1,
-        text: "Thank you for your message. A member of our team will respond shortly. For immediate assistance, please call us at +1 (555) 123-4567.",
+        text: "Thank you for your message. A member of our team will respond shortly. For immediate assistance, please call us at +91 78929 06828.",
         isUser: false,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
