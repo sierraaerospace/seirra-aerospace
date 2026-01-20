@@ -6,8 +6,6 @@ import truenavic from "@/assets/products/truenavic.jpg";
 import truenavMini from "@/assets/products/truenav-mini.jpg";
 import truespeedV2 from "@/assets/products/truespeed-v2.jpg";
 import sierraF1Mini from "@/assets/products/sierra-f1-mini.jpg";
-import truepilot from "@/assets/products/truepilot.jpg";
-import navicore from "@/assets/products/navicore.jpg";
 import micronavFpv from "@/assets/products/micronav-fpv.jpg";
 
 export type ProductCategory = "RTK GPS" | "GPS/GNSS" | "Autopilots" | "Sensors";
@@ -216,55 +214,6 @@ export const products: Product[] = [
     },
     datasheet: "/datasheets/Sierra-F1-Mini_V2.pdf",
     price: 21999
-  },
-  {
-    id: "truepilot",
-    name: "Sierra TruePilot",
-    category: "Autopilots",
-    image: truepilot,
-    tagline: "All-in-one autopilot with integrated GNSS",
-    features: [
-      "Cortex®-M7 core with double-precision FPU",
-      "280 MHz CPU, 2MB Flash, 1MB RAM",
-      "3x TDK ICM42688-P with heater",
-      "Built-in GNSS options: M9N/F10N/F9P",
-      "IST8310 magnetometer",
-      "9x PWM channels with DSHOT capability",
-      "Built-in Neopixel notification LEDs",
-      "GPIO based CAN termination switch"
-    ],
-    specs: {
-      "CPU": "280 MHz Cortex-M7",
-      "UARTs": "4x",
-      "CAN": "1x CAN-FD",
-      "Weight": "21-27g",
-      "Dimensions": "45x47mm"
-    },
-    datasheet: "/datasheets/Sierra-TruePilot.pdf"
-  },
-  {
-    id: "navicore",
-    name: "Sierra-NavICore",
-    category: "Autopilots",
-    image: navicore,
-    tagline: "Cost-effective integrated autopilot",
-    features: [
-      "STM32F405 with 168 MHz CPU",
-      "1MB Flash, 192KB RAM",
-      "125Mbytes of black box",
-      "1x TDK ICM4xxx with heater",
-      "IST8310 compass",
-      "GNSS options: M9N/F10N/F9P",
-      "9x PWM channels with DSHOT capability",
-      "Analog current and Voltage sensing"
-    ],
-    specs: {
-      "CPU": "168 MHz STM32F405",
-      "UARTs": "3x",
-      "GPIO": "2x",
-      "Weight": "19-27g",
-      "Dimensions": "50x50mm"
-    }
   },
   {
     id: "micronav-fpv",
