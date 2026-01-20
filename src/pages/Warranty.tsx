@@ -39,8 +39,7 @@ const Warranty = () => {
 
             <h2 className="font-heading text-xl font-semibold text-foreground mt-8 mb-4">Standard Warranty Coverage</h2>
             <ul className="space-y-2">
-              <li>All products are covered for manufacturing defects for 12 months from the date of purchase.</li>
-              <li>RTK GPS systems and autopilots include extended 12-month coverage.</li>
+              <li>All products, including RTK GPS systems and autopilots, are covered for manufacturing defects for 12 months from the date of purchase.</li>
               <li>Warranty covers repair or replacement at our discretion.</li>
             </ul>
 
