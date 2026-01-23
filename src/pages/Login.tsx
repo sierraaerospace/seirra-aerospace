@@ -6,6 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
+import CountryCodeSelect, { countries, Country } from "@/components/CountryCodeSelect";
 
 // Google icon component
 const GoogleIcon = () => (
@@ -31,11 +32,15 @@ const GoogleIcon = () => (
 
 type LoginMethod = "email" | "phone";
 
+// Get default country (India)
+const defaultCountry = countries.find(c => c.code === "IN") || countries[0];
+
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loginMethod, setLoginMethod] = useState<LoginMethod>("email");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<Country>(defaultCountry);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -124,6 +129,12 @@ const Login = () => {
     }
   };
 
+  // Helper to format phone in E.164 format
+  const getE164Phone = () => {
+    const phoneNumber = formData.phone.trim().replace(/\s+/g, '').replace(/^0+/, '');
+    return `${selectedCountry.dialCode}${phoneNumber}`;
+  };
+
   const handleSendOtp = async () => {
     if (!formData.phone) {
       toast({ title: "Error", description: "Please enter a phone number", variant: "destructive" });
@@ -132,11 +143,8 @@ const Login = () => {
     
     setLoading(true);
     try {
-      // Format phone number with country code if not present
-      let phone = formData.phone.trim();
-      if (!phone.startsWith('+')) {
-        phone = '+91' + phone; // Default to India country code
-      }
+      const phone = getE164Phone();
+      console.log("Sending OTP to:", phone);
       
       const { error } = await supabase.auth.signInWithOtp({
         phone: phone,
@@ -145,6 +153,7 @@ const Login = () => {
       setOtpSent(true);
       toast({ title: "OTP Sent!", description: "Check your phone for the verification code." });
     } catch (error: any) {
+      console.error("OTP Error:", error);
       toast({ 
         title: "Error", 
         description: error.message,
@@ -160,10 +169,8 @@ const Login = () => {
     setLoading(true);
     
     try {
-      let phone = formData.phone.trim();
-      if (!phone.startsWith('+')) {
-        phone = '+91' + phone;
-      }
+      const phone = getE164Phone();
+      console.log("Verifying OTP for:", phone);
       
       const { error } = await supabase.auth.verifyOtp({
         phone: phone,
@@ -173,6 +180,7 @@ const Login = () => {
       if (error) throw error;
       toast({ title: "Welcome!", description: "You have successfully logged in." });
     } catch (error: any) {
+      console.error("Verify OTP Error:", error);
       toast({ 
         title: "Error", 
         description: error.message,
@@ -322,19 +330,29 @@ const Login = () => {
             <form onSubmit={otpSent ? handleVerifyOtp : (e) => { e.preventDefault(); handleSendOtp(); }} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Phone Number</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <div className="flex">
+                  <CountryCodeSelect
+                    value={selectedCountry}
+                    onChange={setSelectedCountry}
+                    disabled={otpSent}
+                  />
                   <input
                     type="tel"
                     required
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+91 9876543210"
+                    onChange={(e) => {
+                      // Only allow digits
+                      const value = e.target.value.replace(/\D/g, '');
+                      setFormData({ ...formData, phone: value });
+                    }}
+                    placeholder="9876543210"
                     disabled={otpSent}
-                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
                   />
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Include country code (e.g., +91 for India)</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Will be sent as: {selectedCountry.dialCode}{formData.phone || "XXXXXXXXXX"}
+                </p>
               </div>
 
               {otpSent && (
