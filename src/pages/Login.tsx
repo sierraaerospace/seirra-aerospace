@@ -6,7 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
-import CountryCodeSelect, { countries, Country } from "@/components/CountryCodeSelect";
+import CountryCodeSelect, { countries, type Country } from "@/components/CountryCodeSelect";
 
 // Google icon component
 const GoogleIcon = () => (
