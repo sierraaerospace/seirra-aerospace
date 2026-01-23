@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, ArrowLeft, Phone } from "lucide-react";
+import { Mail, Lock, User, ArrowLeft, Phone, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { RecaptchaVerifier, ConfirmationResult } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 
 // Google icon component
@@ -36,6 +38,7 @@ const Login = () => {
   const [loginMethod, setLoginMethod] = useState<LoginMethod>("email");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,30 +46,54 @@ const Login = () => {
     phone: "",
     otp: ""
   });
+  
+  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+  const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
+  
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, sendPhoneOtp, verifyPhoneOtp } = useAuth();
   
   // Get the redirect path from state, default to home
   const from = (location.state as { from?: string })?.from || "/";
 
-  // Check if user is already logged in
+  // Redirect if already logged in
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && event === 'SIGNED_IN') {
-        navigate(from, { replace: true });
-      }
-    });
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
 
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate(from, { replace: true });
+  // Initialize reCAPTCHA when phone method is selected
+  useEffect(() => {
+    if (loginMethod === "phone" && !otpSent && recaptchaContainerRef.current) {
+      // Clear any existing verifier
+      if (recaptchaVerifierRef.current) {
+        recaptchaVerifierRef.current.clear();
+      }
+      
+      recaptchaVerifierRef.current = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        size: 'invisible',
+        callback: () => {
+          // reCAPTCHA solved
+        },
+        'expired-callback': () => {
+          toast({ 
+            title: "reCAPTCHA Expired", 
+            description: "Please try again",
+            variant: "destructive"
+          });
+        }
+      });
+    }
+    
+    return () => {
+      if (recaptchaVerifierRef.current) {
+        recaptchaVerifierRef.current.clear();
+        recaptchaVerifierRef.current = null;
       }
     };
-    checkSession();
-
-    return () => subscription.unsubscribe();
-  }, [navigate, from]);
+  }, [loginMethod, otpSent]);
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,29 +101,26 @@ const Login = () => {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-        });
-        if (error) throw error;
+        await signInWithEmail(formData.email, formData.password);
         toast({ title: "Welcome back!", description: "You have successfully logged in." });
       } else {
-        const { error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { name: formData.name }
-          }
-        });
-        if (error) throw error;
-        toast({ title: "Account created!", description: "You can now log in to your account." });
-        setIsLogin(true);
+        await signUpWithEmail(formData.email, formData.password, formData.name);
+        toast({ title: "Account created!", description: "You have been signed in." });
       }
     } catch (error: any) {
+      let errorMessage = error.message;
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered. Please sign in instead.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Please enter a valid email address.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'Password should be at least 6 characters.';
+      } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = 'Invalid email or password.';
+      }
       toast({ 
         title: "Error", 
-        description: error.message,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -107,19 +131,19 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}${from}`
-        }
-      });
-      if (error) throw error;
+      await signInWithGoogle();
+      toast({ title: "Welcome!", description: "You have successfully logged in with Google." });
     } catch (error: any) {
+      let errorMessage = error.message;
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = 'Sign-in cancelled. Please try again.';
+      }
       toast({ 
         title: "Error", 
-        description: error.message,
+        description: errorMessage,
         variant: "destructive"
       });
+    } finally {
       setLoading(false);
     }
   };
@@ -127,6 +151,11 @@ const Login = () => {
   const handleSendOtp = async () => {
     if (!formData.phone) {
       toast({ title: "Error", description: "Please enter a phone number", variant: "destructive" });
+      return;
+    }
+    
+    if (!recaptchaVerifierRef.current) {
+      toast({ title: "Error", description: "reCAPTCHA not initialized. Please refresh the page.", variant: "destructive" });
       return;
     }
     
@@ -138,16 +167,20 @@ const Login = () => {
         phone = '+91' + phone; // Default to India country code
       }
       
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: phone,
-      });
-      if (error) throw error;
+      const result = await sendPhoneOtp(phone, recaptchaVerifierRef.current);
+      setConfirmationResult(result);
       setOtpSent(true);
       toast({ title: "OTP Sent!", description: "Check your phone for the verification code." });
     } catch (error: any) {
+      let errorMessage = error.message;
+      if (error.code === 'auth/invalid-phone-number') {
+        errorMessage = 'Please enter a valid phone number with country code.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many attempts. Please try again later.';
+      }
       toast({ 
         title: "Error", 
-        description: error.message,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -157,25 +190,27 @@ const Login = () => {
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!confirmationResult) {
+      toast({ title: "Error", description: "Please request OTP first", variant: "destructive" });
+      return;
+    }
+    
     setLoading(true);
     
     try {
-      let phone = formData.phone.trim();
-      if (!phone.startsWith('+')) {
-        phone = '+91' + phone;
-      }
-      
-      const { error } = await supabase.auth.verifyOtp({
-        phone: phone,
-        token: formData.otp,
-        type: 'sms'
-      });
-      if (error) throw error;
+      await verifyPhoneOtp(confirmationResult, formData.otp);
       toast({ title: "Welcome!", description: "You have successfully logged in." });
     } catch (error: any) {
+      let errorMessage = error.message;
+      if (error.code === 'auth/invalid-verification-code') {
+        errorMessage = 'Invalid OTP. Please check and try again.';
+      } else if (error.code === 'auth/code-expired') {
+        errorMessage = 'OTP has expired. Please request a new one.';
+      }
       toast({ 
         title: "Error", 
-        description: error.message,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -185,6 +220,9 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-secondary flex items-center justify-center px-4 py-12">
+      {/* Hidden reCAPTCHA container */}
+      <div ref={recaptchaContainerRef} id="recaptcha-container"></div>
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -198,7 +236,7 @@ const Login = () => {
         </Link>
 
         {/* Card */}
-        <div className="bg-background border border-border p-8 md:p-10">
+        <div className="bg-background border border-border rounded-lg shadow-lg p-8 md:p-10">
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <img src={sierraLogo} alt="Sierra Aerospace" className="h-16 w-auto" />
@@ -215,11 +253,11 @@ const Login = () => {
           <Button
             type="button"
             variant="outline"
-            className="w-full mb-4 flex items-center justify-center gap-3"
+            className="w-full mb-4 flex items-center justify-center gap-3 h-12 border-2 hover:bg-secondary transition-colors"
             onClick={handleGoogleLogin}
             disabled={loading}
           >
-            <GoogleIcon />
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
             Continue with Google
           </Button>
 
@@ -234,29 +272,29 @@ const Login = () => {
           </div>
 
           {/* Login Method Tabs */}
-          <div className="flex mb-6 border border-border">
+          <div className="flex mb-6 border border-border rounded-lg overflow-hidden">
             <button
               type="button"
-              onClick={() => { setLoginMethod("email"); setOtpSent(false); }}
-              className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
+              onClick={() => { setLoginMethod("email"); setOtpSent(false); setConfirmationResult(null); }}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                 loginMethod === "email" 
-                  ? "bg-accent text-accent-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-[#F59E0B] text-white" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
-              <Mail className="w-4 h-4 inline mr-2" />
+              <Mail className="w-4 h-4" />
               Email
             </button>
             <button
               type="button"
-              onClick={() => { setLoginMethod("phone"); setOtpSent(false); }}
-              className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
+              onClick={() => { setLoginMethod("phone"); setOtpSent(false); setConfirmationResult(null); }}
+              className={`flex-1 py-3 px-4 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                 loginMethod === "phone" 
-                  ? "bg-accent text-accent-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-[#F59E0B] text-white" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
-              <Phone className="w-4 h-4 inline mr-2" />
+              <Phone className="w-4 h-4" />
               Phone
             </button>
           </div>
@@ -275,7 +313,7 @@ const Login = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="John Doe"
-                      className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+                      className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
@@ -291,7 +329,7 @@ const Login = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="you@example.com"
-                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all"
                   />
                 </div>
               </div>
@@ -306,13 +344,21 @@ const Login = () => {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all"
                   />
                 </div>
               </div>
 
-              <Button type="submit" variant="gold" className="w-full" disabled={loading}>
-                {loading ? "Please wait..." : (isLogin ? "Sign In" : "Create Account")}
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-[#F59E0B] hover:bg-[#D97706] text-white font-medium" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  isLogin ? "Sign In" : "Create Account"
+                )}
               </Button>
             </form>
           )}
@@ -331,7 +377,7 @@ const Login = () => {
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+91 9876543210"
                     disabled={otpSent}
-                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
+                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all disabled:opacity-50"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Include country code (e.g., +91 for India)</p>
@@ -349,21 +395,29 @@ const Login = () => {
                       onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
                       placeholder="Enter 6-digit code"
                       maxLength={6}
-                      className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+                      className="w-full pl-10 pr-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent transition-all"
                     />
                   </div>
                 </div>
               )}
 
-              <Button type="submit" variant="gold" className="w-full" disabled={loading}>
-                {loading ? "Please wait..." : (otpSent ? "Verify & Sign In" : "Send OTP")}
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-[#F59E0B] hover:bg-[#D97706] text-white font-medium" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  otpSent ? "Verify & Sign In" : "Send OTP"
+                )}
               </Button>
 
               {otpSent && (
                 <button
                   type="button"
-                  onClick={() => { setOtpSent(false); setFormData({ ...formData, otp: "" }); }}
-                  className="w-full text-sm text-muted-foreground hover:text-accent transition-colors"
+                  onClick={() => { setOtpSent(false); setConfirmationResult(null); setFormData({ ...formData, otp: "" }); }}
+                  className="w-full text-sm text-muted-foreground hover:text-[#F59E0B] transition-colors"
                 >
                   Change phone number
                 </button>
@@ -376,7 +430,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                className="text-sm text-muted-foreground hover:text-[#F59E0B] transition-colors"
               >
                 {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
               </button>
