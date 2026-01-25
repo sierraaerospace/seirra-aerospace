@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, ArrowLeft, Phone } from "lucide-react";
+import { Mail, ArrowLeft } from "lucide-react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
-import CountryCodeSelect, { countries, type Country } from "@/components/CountryCodeSelect";
 
 // Google icon component
 const GoogleIcon = () => (
@@ -31,28 +30,14 @@ const GoogleIcon = () => (
   </svg>
 );
 
-type LoginMethod = "email" | "phone";
-
-// Get default country (India)
-const defaultCountry = countries.find(c => c.code === "IN") || countries[0];
-
 const TURNSTILE_SITE_KEY = "0x4AAAAAACOaTEhfAyAR5Jvz";
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [loginMethod, setLoginMethod] = useState<LoginMethod>("email");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<Country>(defaultCountry);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    name: "",
-    phone: "",
-    otp: ""
-  });
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -83,37 +68,37 @@ const Login = () => {
     turnstileRef.current?.reset();
   };
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleMagicLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email) {
+      toast({ title: "Error", description: "Please enter your email address", variant: "destructive" });
+      return;
+    }
+    
     if (!captchaToken) {
       toast({ title: "Error", description: "Please complete the CAPTCHA verification", variant: "destructive" });
       return;
     }
+    
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: formData.email,
-          password: formData.password,
-          options: { captchaToken }
-        });
-        if (error) throw error;
-        toast({ title: "Welcome back!", description: "You have successfully logged in." });
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { name: formData.name },
-            captchaToken
-          }
-        });
-        if (error) throw error;
-        toast({ title: "Account created!", description: "You can now log in to your account." });
-        setIsLogin(true);
-      }
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}${from}`,
+          captchaToken
+        }
+      });
+      
+      if (error) throw error;
+      
+      setMagicLinkSent(true);
+      toast({ 
+        title: "Check your email!", 
+        description: "We've sent you a magic link to sign in." 
+      });
     } catch (error: any) {
       toast({ 
         title: "Error", 
@@ -146,70 +131,6 @@ const Login = () => {
     }
   };
 
-  // Helper to format phone in E.164 format
-  const getE164Phone = () => {
-    const phoneNumber = formData.phone.trim().replace(/\s+/g, '').replace(/^0+/, '');
-    return `${selectedCountry.dialCode}${phoneNumber}`;
-  };
-
-  const handleSendOtp = async () => {
-    if (!formData.phone) {
-      toast({ title: "Error", description: "Please enter a phone number", variant: "destructive" });
-      return;
-    }
-    if (!captchaToken) {
-      toast({ title: "Error", description: "Please complete the CAPTCHA verification", variant: "destructive" });
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      const phone = getE164Phone();
-      
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: phone,
-        options: { captchaToken }
-      });
-      if (error) throw error;
-      setOtpSent(true);
-      toast({ title: "OTP Sent!", description: "Check your phone for the verification code." });
-    } catch (error: any) {
-      toast({ 
-        title: "Error", 
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-      resetCaptcha();
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-      const phone = getE164Phone();
-      
-      const { error } = await supabase.auth.verifyOtp({
-        phone: phone,
-        token: formData.otp,
-        type: 'sms'
-      });
-      if (error) throw error;
-      toast({ title: "Welcome!", description: "You have successfully logged in." });
-    } catch (error: any) {
-      toast({ 
-        title: "Error", 
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-secondary flex items-center justify-center px-4 py-12">
       <motion.div
@@ -232,10 +153,10 @@ const Login = () => {
           </div>
 
           <h1 className="font-heading text-2xl font-bold text-center mb-2">
-            {isLogin ? "Welcome Back" : "Create Account"}
+            Welcome
           </h1>
           <p className="text-muted-foreground text-center mb-6">
-            {isLogin ? "Sign in to view your orders and cart" : "Join us to start shopping"}
+            Sign in to view your orders and cart
           </p>
 
           {/* Google Login Button */}
@@ -256,58 +177,37 @@ const Login = () => {
               <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
             </div>
           </div>
 
-          {/* Login Method Tabs */}
-          <div className="flex mb-6 border border-border">
-            <button
-              type="button"
-              onClick={() => { setLoginMethod("email"); setOtpSent(false); }}
-              className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
-                loginMethod === "email" 
-                  ? "bg-accent text-accent-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Mail className="w-4 h-4 inline mr-2" />
-              Email
-            </button>
-            <button
-              type="button"
-              onClick={() => { setLoginMethod("phone"); setOtpSent(false); }}
-              className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
-                loginMethod === "phone" 
-                  ? "bg-accent text-accent-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Phone className="w-4 h-4 inline mr-2" />
-              Phone
-            </button>
-          </div>
-
-          {/* Email Form */}
-          {loginMethod === "email" && (
-            <form onSubmit={handleEmailSubmit} className="space-y-4">
-              {!isLogin && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">Full Name</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <input
-                      type="text"
-                      required={!isLogin}
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="John Doe"
-                      className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
-                    />
-                  </div>
-                </div>
-              )}
-
+          {/* Magic Link Sent State */}
+          {magicLinkSent ? (
+            <div className="text-center space-y-4">
+              <div className="bg-accent/10 border border-accent/20 p-6 rounded-lg">
+                <Mail className="w-12 h-12 text-accent mx-auto mb-4" />
+                <h2 className="font-semibold text-lg mb-2">Check your inbox</h2>
+                <p className="text-muted-foreground text-sm">
+                  We've sent a magic link to <span className="font-medium text-foreground">{email}</span>
+                </p>
+                <p className="text-muted-foreground text-sm mt-2">
+                  Click the link in the email to sign in.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMagicLinkSent(false);
+                  setEmail("");
+                }}
+                className="text-sm text-muted-foreground hover:text-accent transition-colors"
+              >
+                Use a different email
+              </button>
+            </div>
+          ) : (
+            /* Email Magic Link Form */
+            <form onSubmit={handleMagicLinkSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Email</label>
                 <div className="relative">
@@ -315,24 +215,9 @@ const Login = () => {
                   <input
                     type="email"
                     required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <input
-                    type="password"
-                    required
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    placeholder="••••••••"
                     className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
@@ -349,97 +234,9 @@ const Login = () => {
               />
 
               <Button type="submit" variant="gold" className="w-full" disabled={loading || !captchaToken}>
-                {loading ? "Please wait..." : (isLogin ? "Sign In" : "Create Account")}
+                {loading ? "Please wait..." : "Send Magic Link"}
               </Button>
             </form>
-          )}
-
-          {/* Phone Form */}
-          {loginMethod === "phone" && (
-            <form onSubmit={otpSent ? handleVerifyOtp : (e) => { e.preventDefault(); handleSendOtp(); }} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Phone Number</label>
-                <div className="flex">
-                  <CountryCodeSelect
-                    value={selectedCountry}
-                    onChange={setSelectedCountry}
-                    disabled={otpSent}
-                  />
-                  <input
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => {
-                      // Only allow digits
-                      const value = e.target.value.replace(/\D/g, '');
-                      setFormData({ ...formData, phone: value });
-                    }}
-                    placeholder="9876543210"
-                    disabled={otpSent}
-                    className="flex-1 px-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Will be sent as: {selectedCountry.dialCode}{formData.phone || "XXXXXXXXXX"}
-                </p>
-              </div>
-
-              {otpSent && (
-                <div>
-                  <label className="block text-sm font-medium mb-2">Verification Code</label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <input
-                      type="text"
-                      required
-                      value={formData.otp}
-                      onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
-                      placeholder="Enter 6-digit code"
-                      maxLength={6}
-                      className="w-full pl-10 pr-4 py-3 bg-secondary border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent transition-colors"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {!otpSent && (
-                <Turnstile
-                  ref={turnstileRef}
-                  siteKey={TURNSTILE_SITE_KEY}
-                  onSuccess={(token) => setCaptchaToken(token)}
-                  onExpire={() => setCaptchaToken(null)}
-                  onError={() => setCaptchaToken(null)}
-                  options={{ theme: "light", size: "normal" }}
-                  className="mb-4"
-                />
-              )}
-
-              <Button type="submit" variant="gold" className="w-full" disabled={loading || (!otpSent && !captchaToken)}>
-                {loading ? "Please wait..." : (otpSent ? "Verify & Sign In" : "Send OTP")}
-              </Button>
-
-              {otpSent && (
-                <button
-                  type="button"
-                  onClick={() => { setOtpSent(false); setFormData({ ...formData, otp: "" }); }}
-                  className="w-full text-sm text-muted-foreground hover:text-accent transition-colors"
-                >
-                  Change phone number
-                </button>
-              )}
-            </form>
-          )}
-
-          {loginMethod === "email" && (
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-muted-foreground hover:text-accent transition-colors"
-              >
-                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-              </button>
-            </div>
           )}
         </div>
       </motion.div>
