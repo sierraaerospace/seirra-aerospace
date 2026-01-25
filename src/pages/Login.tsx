@@ -42,6 +42,7 @@ const Login = () => {
 
   // Always complete auth via a single callback route to avoid redirect loops.
   const oauthRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(from)}`;
+  const oauthRedirectToBase = `${window.location.origin}/auth/callback`;
 
   // Check if user is already logged in
   useEffect(() => {
@@ -119,10 +120,12 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
+      // Persist intended destination since OAuth redirectTo must be a fixed callback URL.
+      localStorage.setItem("postAuthRedirect", from);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: oauthRedirectTo,
+          redirectTo: oauthRedirectToBase,
         }
       });
       if (error) throw error;

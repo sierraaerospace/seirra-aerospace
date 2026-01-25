@@ -9,7 +9,10 @@ const AuthCallback = () => {
   const [checking, setChecking] = useState(true);
 
   const next = useMemo(() => {
-    const raw = searchParams.get("next") || "/orders";
+    const raw =
+      searchParams.get("next") ||
+      localStorage.getItem("postAuthRedirect") ||
+      "/orders";
     // Only allow internal redirects.
     return raw.startsWith("/") ? raw : "/orders";
   }, [searchParams]);
@@ -21,11 +24,23 @@ const AuthCallback = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION") && session && !hasRedirected) {
+      const isSignedInEvent =
+        event === "SIGNED_IN" ||
+        event === "TOKEN_REFRESHED" ||
+        event === "INITIAL_SESSION";
+
+      if (isSignedInEvent && session && !hasRedirected) {
         hasRedirected = true;
-        // Avoid any chance of auth callback deadlocks
+        // Avoid any chance of auth callback deadlocks (defer navigation)
         setTimeout(() => navigate(next, { replace: true }), 0);
+        return;
       }
+
+      if (event === "SIGNED_OUT") {
+        setChecking(false);
+        return;
+      }
+
       if (!session) setChecking(false);
     });
 
@@ -33,7 +48,8 @@ const AuthCallback = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session && !hasRedirected) {
         hasRedirected = true;
-        navigate(next, { replace: true });
+        // Defer navigation to avoid auth deadlocks
+        setTimeout(() => navigate(next, { replace: true }), 0);
         return;
       }
       setChecking(false);
