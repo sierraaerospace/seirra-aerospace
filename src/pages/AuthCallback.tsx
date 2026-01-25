@@ -3,11 +3,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getSafeRedirectPath } from "@/lib/errorUtils";
+import { Button } from "@/components/ui/button";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [checking, setChecking] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const next = useMemo(() => {
     const raw =
@@ -15,11 +17,13 @@ const AuthCallback = () => {
       localStorage.getItem("postAuthRedirect") ||
       "/";
     // Prevent open redirect attacks (including protocol-relative URLs like //evil.com)
-    return getSafeRedirectPath(raw, "/orders");
+    // Per current UX, default back to the Home page.
+    return getSafeRedirectPath(raw, "/");
   }, [searchParams]);
 
   useEffect(() => {
     let hasRedirected = false;
+    let fallbackTimer: number | null = null;
 
     // In SPA OAuth flows, the callback URL may include either:
     // - PKCE: ?code=...
@@ -90,15 +94,40 @@ const AuthCallback = () => {
       setChecking(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Hard fallback so we never leave users stuck on this screen.
+    fallbackTimer = window.setTimeout(() => {
+      if (!hasRedirected) {
+        setError("We couldn’t confirm your session. Please try signing in again.");
+        setChecking(false);
+      }
+    }, 10000);
+
+    return () => {
+      subscription.unsubscribe();
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
+    };
   }, [navigate, next]);
 
   return (
     <div className="min-h-screen bg-secondary flex items-center justify-center">
       {checking ? (
-        <Loader2 className="w-8 h-8 animate-spin text-accent" />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <div className="text-muted-foreground text-sm">Finishing sign-in…</div>
+        </div>
+      ) : error ? (
+        <div className="w-full max-w-md px-6 text-center space-y-4">
+          <div className="text-foreground font-medium">Sign-in didn’t finish</div>
+          <div className="text-muted-foreground text-sm">{error}</div>
+          <div className="flex items-center justify-center gap-3">
+            <Button variant="secondary" onClick={() => navigate("/", { replace: true })}>
+              Go to Home
+            </Button>
+            <Button onClick={() => navigate("/login", { replace: true })}>Try again</Button>
+          </div>
+        </div>
       ) : (
-        <div className="text-muted-foreground text-sm">Finishing sign-in…</div>
+        <div className="text-muted-foreground text-sm">Redirecting…</div>
       )}
     </div>
   );
