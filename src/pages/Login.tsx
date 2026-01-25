@@ -165,7 +165,6 @@ const Login = () => {
     setLoading(true);
     try {
       const phone = getE164Phone();
-      console.log("Sending OTP to:", phone);
       
       const { error } = await supabase.auth.signInWithOtp({
         phone: phone,
@@ -175,7 +174,6 @@ const Login = () => {
       setOtpSent(true);
       toast({ title: "OTP Sent!", description: "Check your phone for the verification code." });
     } catch (error: any) {
-      console.error("OTP Error:", error);
       toast({ 
         title: "Error", 
         description: error.message,
@@ -193,7 +191,6 @@ const Login = () => {
     
     try {
       const phone = getE164Phone();
-      console.log("Verifying OTP for:", phone);
       
       const { error } = await supabase.auth.verifyOtp({
         phone: phone,
@@ -203,7 +200,6 @@ const Login = () => {
       if (error) throw error;
       toast({ title: "Welcome!", description: "You have successfully logged in." });
     } catch (error: any) {
-      console.error("Verify OTP Error:", error);
       toast({ 
         title: "Error", 
         description: error.message,
