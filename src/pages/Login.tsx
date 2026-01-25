@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowLeft, Phone } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,12 +36,16 @@ type LoginMethod = "email" | "phone";
 // Get default country (India)
 const defaultCountry = countries.find(c => c.code === "IN") || countries[0];
 
+const TURNSTILE_SITE_KEY = "0x4AAAAAACOaTEhfAyAR5Jvz";
+
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loginMethod, setLoginMethod] = useState<LoginMethod>("email");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country>(defaultCountry);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -73,8 +78,17 @@ const Login = () => {
     return () => subscription.unsubscribe();
   }, [navigate, from]);
 
+  const resetCaptcha = () => {
+    setCaptchaToken(null);
+    turnstileRef.current?.reset();
+  };
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) {
+      toast({ title: "Error", description: "Please complete the CAPTCHA verification", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     try {
@@ -82,6 +96,7 @@ const Login = () => {
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
+          options: { captchaToken }
         });
         if (error) throw error;
         toast({ title: "Welcome back!", description: "You have successfully logged in." });
@@ -91,7 +106,8 @@ const Login = () => {
           password: formData.password,
           options: {
             emailRedirectTo: window.location.origin,
-            data: { name: formData.name }
+            data: { name: formData.name },
+            captchaToken
           }
         });
         if (error) throw error;
@@ -106,6 +122,7 @@ const Login = () => {
       });
     } finally {
       setLoading(false);
+      resetCaptcha();
     }
   };
 
@@ -140,6 +157,10 @@ const Login = () => {
       toast({ title: "Error", description: "Please enter a phone number", variant: "destructive" });
       return;
     }
+    if (!captchaToken) {
+      toast({ title: "Error", description: "Please complete the CAPTCHA verification", variant: "destructive" });
+      return;
+    }
     
     setLoading(true);
     try {
@@ -148,6 +169,7 @@ const Login = () => {
       
       const { error } = await supabase.auth.signInWithOtp({
         phone: phone,
+        options: { captchaToken }
       });
       if (error) throw error;
       setOtpSent(true);
@@ -161,6 +183,7 @@ const Login = () => {
       });
     } finally {
       setLoading(false);
+      resetCaptcha();
     }
   };
 
@@ -319,7 +342,17 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button type="submit" variant="gold" className="w-full" disabled={loading}>
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                onError={() => setCaptchaToken(null)}
+                options={{ theme: "light", size: "normal" }}
+                className="mb-4"
+              />
+
+              <Button type="submit" variant="gold" className="w-full" disabled={loading || !captchaToken}>
                 {loading ? "Please wait..." : (isLogin ? "Sign In" : "Create Account")}
               </Button>
             </form>
@@ -373,7 +406,19 @@ const Login = () => {
                 </div>
               )}
 
-              <Button type="submit" variant="gold" className="w-full" disabled={loading}>
+              {!otpSent && (
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onSuccess={(token) => setCaptchaToken(token)}
+                  onExpire={() => setCaptchaToken(null)}
+                  onError={() => setCaptchaToken(null)}
+                  options={{ theme: "light", size: "normal" }}
+                  className="mb-4"
+                />
+              )}
+
+              <Button type="submit" variant="gold" className="w-full" disabled={loading || (!otpSent && !captchaToken)}>
                 {loading ? "Please wait..." : (otpSent ? "Verify & Sign In" : "Send OTP")}
               </Button>
 
