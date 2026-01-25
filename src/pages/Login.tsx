@@ -42,17 +42,26 @@ const Login = () => {
 
   // Check if user is already logged in
   useEffect(() => {
+    let hasNavigated = false;
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
-        navigate(from, { replace: true });
+      if (session && !hasNavigated) {
+        hasNavigated = true;
+        // Use setTimeout to avoid Supabase auth deadlock
+        setTimeout(() => {
+          navigate(from, { replace: true });
+        }, 0);
       }
-      setCheckingSession(false);
+      if (!session) {
+        setCheckingSession(false);
+      }
     });
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+      if (session && !hasNavigated) {
+        hasNavigated = true;
         navigate(from, { replace: true });
       }
       setCheckingSession(false);
