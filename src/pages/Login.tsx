@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Mail, ArrowLeft } from "lucide-react";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,14 +29,11 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const TURNSTILE_SITE_KEY = "0x4AAAAAACOaTEhfAyAR5Jvz";
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const turnstileRef = useRef<TurnstileInstance>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -46,27 +42,24 @@ const Login = () => {
 
   // Check if user is already logged in
   useEffect(() => {
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && event === 'SIGNED_IN') {
+      if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
         navigate(from, { replace: true });
       }
+      setCheckingSession(false);
     });
 
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate(from, { replace: true });
       }
-    };
-    checkSession();
+      setCheckingSession(false);
+    });
 
     return () => subscription.unsubscribe();
   }, [navigate, from]);
-
-  const resetCaptcha = () => {
-    setCaptchaToken(null);
-    turnstileRef.current?.reset();
-  };
 
   const handleMagicLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,9 +68,11 @@ const Login = () => {
       toast({ title: "Error", description: "Please enter your email address", variant: "destructive" });
       return;
     }
-    
-    if (!captchaToken) {
-      toast({ title: "Error", description: "Please complete the CAPTCHA verification", variant: "destructive" });
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({ title: "Error", description: "Please enter a valid email address", variant: "destructive" });
       return;
     }
     
@@ -87,8 +82,7 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}${from}`,
-          captchaToken
+          emailRedirectTo: `${window.location.origin}${from}`
         }
       });
       
@@ -102,12 +96,11 @@ const Login = () => {
     } catch (error: any) {
       toast({ 
         title: "Error", 
-        description: error.message,
+        description: error.message || "Failed to send magic link",
         variant: "destructive"
       });
     } finally {
       setLoading(false);
-      resetCaptcha();
     }
   };
 
@@ -124,12 +117,21 @@ const Login = () => {
     } catch (error: any) {
       toast({ 
         title: "Error", 
-        description: error.message,
+        description: error.message || "Failed to sign in with Google",
         variant: "destructive"
       });
       setLoading(false);
     }
   };
+
+  // Show loading while checking session
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-secondary flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-accent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-secondary flex items-center justify-center px-4 py-12">
@@ -167,7 +169,7 @@ const Login = () => {
             onClick={handleGoogleLogin}
             disabled={loading}
           >
-            <GoogleIcon />
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <GoogleIcon />}
             Continue with Google
           </Button>
 
@@ -223,18 +225,15 @@ const Login = () => {
                 </div>
               </div>
 
-              <Turnstile
-                ref={turnstileRef}
-                siteKey={TURNSTILE_SITE_KEY}
-                onSuccess={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken(null)}
-                onError={() => setCaptchaToken(null)}
-                options={{ theme: "light", size: "normal" }}
-                className="mb-4"
-              />
-
-              <Button type="submit" variant="gold" className="w-full" disabled={loading || !captchaToken}>
-                {loading ? "Please wait..." : "Send Magic Link"}
+              <Button type="submit" variant="gold" className="w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Please wait...
+                  </>
+                ) : (
+                  "Send Magic Link"
+                )}
               </Button>
             </form>
           )}
