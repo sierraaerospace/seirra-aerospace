@@ -107,17 +107,38 @@ function formatDate(dateString: string | null): string {
   });
 }
 
+// HTML escape function to prevent XSS attacks
+function escapeHtml(unsafe: string | null | undefined): string {
+  if (!unsafe) return "";
+  return String(unsafe)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function generateInvoiceHtml(order: any): string {
   const shippingAddress = order.shipping_address || {};
+  
+  // Sanitize all user-provided data to prevent XSS
+  const safeName = escapeHtml(shippingAddress.name) || 'Customer';
+  const safeAddress = escapeHtml(shippingAddress.address);
+  const safeCity = escapeHtml(shippingAddress.city);
+  const safeState = escapeHtml(shippingAddress.state);
+  const safePincode = escapeHtml(shippingAddress.pincode);
+  const safePhone = escapeHtml(shippingAddress.phone);
+  const safeOrderNumber = escapeHtml(order.order_number);
+  const safeStatus = escapeHtml(order.status);
   
   const itemsRows = order.order_items
     .map(
       (item: any) => `
     <tr>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.product_name}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${item.unit_price.toFixed(2)}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${item.total_price.toFixed(2)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${escapeHtml(item.product_name)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${Number(item.quantity) || 0}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${(Number(item.unit_price) || 0).toFixed(2)}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${(Number(item.total_price) || 0).toFixed(2)}</td>
     </tr>
   `
     )
@@ -249,19 +270,19 @@ function generateInvoiceHtml(order: any): string {
     </div>
     <div class="invoice-info">
       <h2>INVOICE</h2>
-      <p><strong>Invoice No:</strong> ${order.order_number}</p>
+      <p><strong>Invoice No:</strong> ${safeOrderNumber}</p>
       <p><strong>Date:</strong> ${formatDate(order.created_at)}</p>
-      <p><strong>Status:</strong> <span class="status-badge">${order.status.toUpperCase()}</span></p>
+      <p><strong>Status:</strong> <span class="status-badge">${safeStatus.toUpperCase()}</span></p>
     </div>
   </div>
 
   <div class="addresses">
     <div class="address-block">
       <h3>Ship To</h3>
-      <p><strong>${shippingAddress.name || 'Customer'}</strong></p>
-      <p>${shippingAddress.address || ''}</p>
-      <p>${shippingAddress.city || ''}${shippingAddress.state ? ', ' + shippingAddress.state : ''} ${shippingAddress.pincode || ''}</p>
-      <p>${shippingAddress.phone || ''}</p>
+      <p><strong>${safeName}</strong></p>
+      <p>${safeAddress}</p>
+      <p>${safeCity}${safeState ? ', ' + safeState : ''} ${safePincode}</p>
+      <p>${safePhone}</p>
     </div>
     ${order.expected_delivery ? `
     <div class="address-block" style="text-align: right;">
@@ -288,19 +309,19 @@ function generateInvoiceHtml(order: any): string {
   <div class="totals">
     <div class="totals-row">
       <span>Subtotal</span>
-      <span>₹${order.subtotal.toFixed(2)}</span>
+      <span>₹${(Number(order.subtotal) || 0).toFixed(2)}</span>
     </div>
     <div class="totals-row">
       <span>Shipping</span>
-      <span>₹${order.shipping_cost.toFixed(2)}</span>
+      <span>₹${(Number(order.shipping_cost) || 0).toFixed(2)}</span>
     </div>
     <div class="totals-row">
       <span>Tax (GST)</span>
-      <span>₹${order.tax.toFixed(2)}</span>
+      <span>₹${(Number(order.tax) || 0).toFixed(2)}</span>
     </div>
     <div class="totals-row total">
       <span>Total</span>
-      <span>₹${order.total.toFixed(2)}</span>
+      <span>₹${(Number(order.total) || 0).toFixed(2)}</span>
     </div>
   </div>
 
