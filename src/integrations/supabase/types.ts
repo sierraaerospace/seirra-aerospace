@@ -145,6 +145,45 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          datasheet_url: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          datasheet_url?: string | null
+          description?: string | null
+          id: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          datasheet_url?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shipments: {
         Row: {
           carrier: string | null
