@@ -14,6 +14,7 @@ import Warranty from "./pages/Warranty";
 import ShippingReturns from "./pages/ShippingReturns";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ConditionsOfSale from "./pages/ConditionsOfSale";
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/orders" element={<OrderHistory />} />
               <Route path="/warranty" element={<Warranty />} />

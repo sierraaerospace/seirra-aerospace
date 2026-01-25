@@ -40,6 +40,9 @@ const Login = () => {
   // Get the redirect path from state, default to home
   const from = (location.state as { from?: string })?.from || "/";
 
+  // Always complete auth via a single callback route to avoid redirect loops.
+  const oauthRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(from)}`;
+
   // Check if user is already logged in
   useEffect(() => {
     let hasNavigated = false;
@@ -91,7 +94,7 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}${from}`
+          emailRedirectTo: oauthRedirectTo,
         }
       });
       
@@ -119,7 +122,7 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${from}`
+          redirectTo: oauthRedirectTo,
         }
       });
       if (error) throw error;
