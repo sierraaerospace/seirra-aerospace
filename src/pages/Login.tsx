@@ -6,6 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
+import { getSafeRedirectPath, getSafeErrorMessage } from "@/lib/errorUtils";
 
 // Google icon component
 const GoogleIcon = () => (
@@ -37,8 +38,9 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get the redirect path from state, default to home
-  const from = (location.state as { from?: string })?.from || "/";
+  // Get the redirect path from state, validate to prevent open redirect
+  const rawFrom = (location.state as { from?: string })?.from || "/";
+  const from = getSafeRedirectPath(rawFrom, "/");
 
   // Always complete auth via a single callback route to avoid redirect loops.
   const oauthRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(from)}`;
@@ -106,10 +108,10 @@ const Login = () => {
         title: "Check your email!", 
         description: "We've sent you a magic link to sign in." 
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({ 
         title: "Error", 
-        description: error.message || "Failed to send magic link",
+        description: getSafeErrorMessage(error, "Failed to send magic link"),
         variant: "destructive"
       });
     } finally {
@@ -129,10 +131,10 @@ const Login = () => {
         }
       });
       if (error) throw error;
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({ 
         title: "Error", 
-        description: error.message || "Failed to sign in with Google",
+        description: getSafeErrorMessage(error, "Failed to sign in with Google"),
         variant: "destructive"
       });
       setLoading(false);

@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
+import { getSafeErrorMessage } from "@/lib/errorUtils";
 
 interface OrderItem {
   id: string;
@@ -128,10 +129,10 @@ const OrderHistory = () => {
       if (ordersError) throw ordersError;
 
       setOrders(ordersData as Order[]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error loading orders",
-        description: error.message,
+        description: getSafeErrorMessage(error, "Failed to load orders"),
         variant: "destructive",
       });
     } finally {
@@ -193,10 +194,10 @@ const OrderHistory = () => {
         title: "Invoice downloaded",
         description: `Invoice for ${order.order_number} has been downloaded`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error downloading invoice",
-        description: error.message || "Failed to download invoice",
+        description: getSafeErrorMessage(error, "Failed to download invoice"),
         variant: "destructive",
       });
     } finally {

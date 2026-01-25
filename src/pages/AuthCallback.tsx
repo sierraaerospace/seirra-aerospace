@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getSafeRedirectPath } from "@/lib/errorUtils";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -13,8 +14,8 @@ const AuthCallback = () => {
       searchParams.get("next") ||
       localStorage.getItem("postAuthRedirect") ||
       "/";
-    // Only allow internal redirects.
-    return raw.startsWith("/") ? raw : "/orders";
+    // Prevent open redirect attacks (including protocol-relative URLs like //evil.com)
+    return getSafeRedirectPath(raw, "/orders");
   }, [searchParams]);
 
   useEffect(() => {
