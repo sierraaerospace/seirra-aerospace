@@ -1,10 +1,17 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// UUID v4 validation regex
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isValidUUID(value: unknown): value is string {
+  return typeof value === "string" && UUID_REGEX.test(value);
+}
 
 serve(async (req: Request) => {
   // Handle CORS preflight requests
@@ -16,9 +23,10 @@ serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Verify authorization
+    // Verify authorization header exists and is properly formatted
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
+      console.warn("Missing or malformed Authorization header");
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -29,9 +37,11 @@ serve(async (req: Request) => {
       global: { headers: { Authorization: authHeader } },
     });
 
+    // Validate user authentication
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     
     if (userError || !user) {
+      console.warn("User authentication failed:", userError?.message || "No user");
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -40,16 +50,37 @@ serve(async (req: Request) => {
 
     const userId = user.id;
 
-    const { orderId } = await req.json();
-
-    if (!orderId) {
+    // Parse and validate request body
+    let requestBody: unknown;
+    try {
+      requestBody = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: "Order ID is required" }),
+        JSON.stringify({ error: "Invalid JSON body" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Fetch order with items
+    // Validate request body structure
+    if (typeof requestBody !== "object" || requestBody === null) {
+      return new Response(
+        JSON.stringify({ error: "Request body must be an object" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { orderId } = requestBody as { orderId?: unknown };
+
+    // Strict UUID validation for orderId
+    if (!isValidUUID(orderId)) {
+      console.warn("Invalid orderId format:", typeof orderId);
+      return new Response(
+        JSON.stringify({ error: "Invalid order ID format. Must be a valid UUID." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Fetch order with items - scoped to authenticated user
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .select(`
@@ -61,7 +92,7 @@ serve(async (req: Request) => {
       .maybeSingle();
 
     if (orderError) {
-      console.error("Error fetching order:", orderError);
+      console.error("Database error fetching order:", { code: orderError.code, hint: orderError.hint });
       return new Response(
         JSON.stringify({ error: "Failed to fetch order" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -79,6 +110,8 @@ serve(async (req: Request) => {
     const invoiceHtml = generateInvoiceHtml(order);
     const pdfBase64 = await generatePdfFromHtml(invoiceHtml);
 
+    console.info("Invoice generated successfully:", { orderNumber: order.order_number });
+
     return new Response(
       JSON.stringify({
         pdfBase64,
@@ -89,10 +122,11 @@ serve(async (req: Request) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
-  } catch (error: any) {
-    console.error("Error generating invoice:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Unexpected error generating invoice:", message);
     return new Response(
-      JSON.stringify({ error: error.message || "Failed to generate invoice" }),
+      JSON.stringify({ error: "Failed to generate invoice" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
