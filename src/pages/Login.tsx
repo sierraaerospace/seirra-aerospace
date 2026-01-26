@@ -128,6 +128,10 @@ const Login = () => {
         provider: 'google',
         options: {
           redirectTo: oauthRedirectToBase,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         }
       });
       if (error) throw error;
