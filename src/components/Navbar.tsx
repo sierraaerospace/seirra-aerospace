@@ -4,11 +4,26 @@ import { Menu, X, ShoppingCart, User } from "lucide-react";
 import { Button } from "./ui/button";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 import { Link, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,17 +83,32 @@ const Navbar = () => {
               <ShoppingCart size={20} />
               <span>Cart</span>
             </Link>
-            <Button variant="gold" size="default" asChild>
-              <Link
-                to="/login"
-                state={{ from: location.pathname + location.search }}
-                className="flex items-center gap-2"
-              >
-                <User size={16} />
-                Login
-              </Link>
-            </Button>
-
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">{user.email}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    window.location.reload();
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button variant="gold" size="default" asChild>
+                <Link
+                  to="/login"
+                  state={{ from: location.pathname + location.search }}
+                  className="flex items-center gap-2"
+                >
+                  <User size={16} />
+                  Login
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -116,17 +146,32 @@ const Navbar = () => {
                   <ShoppingCart size={20} />
                   <span>Cart</span>
                 </Link>
-                <Button variant="gold" className="w-full" asChild>
-                  <Link
-                    to="/login"
-                    state={{ from: location.pathname + location.search }}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <User size={16} className="mr-2" />
-                    Login
-                  </Link>
-                </Button>
-
+                {user ? (
+                  <>
+                    <span className="text-sm text-muted-foreground py-2">{user.email}</span>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        window.location.reload();
+                      }}
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="gold" className="w-full" asChild>
+                    <Link
+                      to="/login"
+                      state={{ from: location.pathname + location.search }}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <User size={16} className="mr-2" />
+                      Login
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </motion.div>
