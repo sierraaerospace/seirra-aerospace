@@ -120,28 +120,25 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
     try {
-      // Persist intended destination since OAuth redirectTo must be a fixed callback URL.
-      localStorage.setItem("postAuthRedirect", from);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: oauthRedirectToBase,
+          redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
           },
-        }
+        },
       });
-      if (error) throw error;
-    } catch (error: unknown) {
-      toast({ 
-        title: "Error", 
-        description: getSafeErrorMessage(error, "Failed to sign in with Google"),
-        variant: "destructive"
-      });
-      setLoading(false);
+
+      if (error) {
+        console.error('Sign in error:', error);
+        alert('Failed to sign in. Please try again.');
+      }
+    } catch (err) {
+      console.error('Exception:', err);
+      alert('An error occurred. Please try again.');
     }
   };
 
