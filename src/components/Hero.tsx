@@ -8,7 +8,7 @@ const Hero = () => {
   const isInView = useInView(ref, { once: true });
 
   return (
-    <section id="home" ref={ref} className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <section id="home" ref={ref} className="relative min-h-screen flex items-center pt-20 pb-24 md:pb-8 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-secondary via-background to-background" />
       <div 
@@ -95,7 +95,7 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground hover:text-accent transition-colors"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground hover:text-accent transition-colors hidden md:flex"
       >
         <span className="text-xs tracking-widest uppercase font-medium">Scroll to Explore</span>
         <motion.div
