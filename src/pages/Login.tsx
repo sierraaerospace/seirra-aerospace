@@ -4,6 +4,7 @@ import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 import { getSafeRedirectPath, getSafeErrorMessage } from "@/lib/errorUtils";
@@ -131,12 +132,11 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin + '/auth/callback',
-          skipBrowserRedirect: false,
-        }
+      const { error } = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: oauthRedirectTo,
+        extraParams: {
+          prompt: "select_account",
+        },
       });
 
       if (error) {
