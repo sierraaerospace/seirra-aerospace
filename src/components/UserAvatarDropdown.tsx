@@ -65,7 +65,13 @@ export const UserAvatarDropdown = ({ onClose }: UserAvatarDropdownProps) => {
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (e) {
+      // Even if signOut fails, clear local state
+      console.error("Sign out error:", e);
+    }
+    // Force clear and redirect
     window.location.href = "/";
   };
 
