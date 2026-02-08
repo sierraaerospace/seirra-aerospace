@@ -4,6 +4,7 @@ import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 import { getSafeRedirectPath, getSafeErrorMessage } from "@/lib/errorUtils";
@@ -37,24 +38,25 @@ const Login = () => {
   const [checkingSession, setCheckingSession] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Get the redirect path from state, validate to prevent open redirect
   const rawFrom = (location.state as { from?: string })?.from || "/";
   const from = getSafeRedirectPath(rawFrom, "/");
 
   // Always complete auth via a single callback route to avoid redirect loops.
   const oauthRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(from)}`;
-  const oauthRedirectToBase = `${window.location.origin}/auth/callback`;
 
   // Check if user is already logged in
   useEffect(() => {
     let hasNavigated = false;
-    
+
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session && !hasNavigated) {
         hasNavigated = true;
-        // Use setTimeout to avoid Supabase auth deadlock
+        // Use setTimeout to avoid auth deadlock
         setTimeout(() => {
           navigate(from, { replace: true });
         }, 0);
@@ -78,19 +80,27 @@ const Login = () => {
 
   const handleMagicLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
-      toast({ title: "Error", description: "Please enter your email address", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Please enter your email address",
+        variant: "destructive",
+      });
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast({ title: "Error", description: "Please enter a valid email address", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
       return;
     }
-    
+
     setLoading(true);
 
     try {
@@ -98,21 +108,21 @@ const Login = () => {
         email: email,
         options: {
           emailRedirectTo: oauthRedirectTo,
-        }
+        },
       });
-      
+
       if (error) throw error;
-      
+
       setMagicLinkSent(true);
-      toast({ 
-        title: "Check your email!", 
-        description: "We've sent you a magic link to sign in." 
+      toast({
+        title: "Check your email!",
+        description: "We've sent you a magic link to sign in.",
       });
     } catch (error: unknown) {
-      toast({ 
-        title: "Error", 
+      toast({
+        title: "Error",
         description: getSafeErrorMessage(error, "Failed to send magic link"),
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -120,25 +130,31 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
+      const { error } = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: oauthRedirectTo,
+        extraParams: {
+          access_type: "offline",
+          prompt: "consent",
         },
       });
 
       if (error) {
-        console.error('Sign in error:', error);
-        alert('Failed to sign in. Please try again.');
+        toast({
+          title: "Sign in failed",
+          description: getSafeErrorMessage(error, "Failed to sign in"),
+          variant: "destructive",
+        });
       }
     } catch (err) {
-      console.error('Exception:', err);
-      alert('An error occurred. Please try again.');
+      toast({
+        title: "Sign in failed",
+        description: getSafeErrorMessage(err, "An error occurred. Please try again."),
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
