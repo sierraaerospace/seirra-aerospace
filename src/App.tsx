@@ -15,8 +15,14 @@ import ShippingReturns from "./pages/ShippingReturns";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ConditionsOfSale from "./pages/ConditionsOfSale";
 import AuthCallback from "./pages/AuthCallback";
+import { useAuthCodeExchange } from "@/hooks/useAuthCodeExchange";
 
 const queryClient = new QueryClient();
+
+const AuthCodeExchange = () => {
+  useAuthCodeExchange();
+  return null;
+};
 
 const App = () => (
   <HelmetProvider>
@@ -26,6 +32,9 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            {/* Ensures OAuth code exchange works even if provider redirects to / */}
+            <AuthCodeExchange />
+
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
