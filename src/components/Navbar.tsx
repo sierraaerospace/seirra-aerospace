@@ -43,8 +43,11 @@ const Navbar = () => {
   ];
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    try {
+      await supabase.auth.signOut({ scope: "local" });
+    } finally {
+      window.location.href = "/";
+    }
   };
 
   return (
