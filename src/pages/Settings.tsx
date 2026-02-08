@@ -20,33 +20,39 @@ const Settings = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate("/login", { state: { from: "/settings" } });
-      }
-    });
+    let active = true;
 
-    const fetchUserAndProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+    const redirectToLogin = () => {
+      navigate("/login", { state: { from: "/settings" } });
+    };
+
+    const fetchUserAndProfile = async (userId?: string) => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!active) return;
+
       if (!session) {
-        navigate("/login", { state: { from: "/settings" } });
+        redirectToLogin();
         return;
       }
 
       setUser(session.user);
 
+      const effectiveUserId = userId ?? session.user.id;
+
       // Fetch or create profile
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("display_name")
-        .eq("user_id", session.user.id)
+        .eq("user_id", effectiveUserId)
         .single();
 
       if (error && error.code === "PGRST116") {
         // Profile doesn't exist, create one
         await supabase.from("profiles").insert({
-          user_id: session.user.id,
+          user_id: effectiveUserId,
           display_name: session.user.user_metadata?.full_name ?? "",
         });
         setDisplayName(session.user.user_metadata?.full_name ?? "");
@@ -57,9 +63,30 @@ const Settings = () => {
       setLoading(false);
     };
 
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+
+      if (event === "SIGNED_OUT") {
+        redirectToLogin();
+        return;
+      }
+
+      if (event === "SIGNED_IN" && session) {
+        // Defer DB work to avoid auth callback deadlocks.
+        setTimeout(() => {
+          fetchUserAndProfile(session.user.id);
+        }, 0);
+      }
+    });
+
     fetchUserAndProfile();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const handleSave = async () => {

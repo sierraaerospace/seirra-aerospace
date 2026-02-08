@@ -89,30 +89,52 @@ const OrderHistory = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let active = true;
+
+    const redirectToLogin = () => {
+      navigate("/login", { state: { from: "/orders" } });
+    };
+
     // Set up auth state listener BEFORE checking session
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate("/login", { state: { from: "/orders" } });
-      } else if (event === 'SIGNED_IN') {
-        fetchOrders();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+
+      // Avoid redirecting on transient null sessions during initial load.
+      if (event === "SIGNED_OUT") {
+        redirectToLogin();
+        return;
+      }
+
+      if (event === "SIGNED_IN" && session) {
+        // Defer DB work to avoid auth callback deadlocks.
+        setTimeout(() => {
+          fetchOrders();
+        }, 0);
       }
     });
 
     // Then check current session
-    const checkAuthAndFetchOrders = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!active) return;
+
       if (!session) {
-        navigate("/login", { state: { from: "/orders" } });
+        redirectToLogin();
         return;
       }
 
       await fetchOrders();
+    })();
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
     };
-
-    checkAuthAndFetchOrders();
-
-    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const fetchOrders = async () => {
