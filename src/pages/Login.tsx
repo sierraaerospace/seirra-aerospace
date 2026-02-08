@@ -4,6 +4,7 @@ import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 import { getSafeRedirectPath, getSafeErrorMessage } from "@/lib/errorUtils";
@@ -132,24 +133,24 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      // Use the backend OAuth endpoint directly to avoid relying on `/<platform>~oauth/initiate`.
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: oauthRedirectTo,
-          queryParams: {
-            prompt: "select_account",
-          },
+      // Use Lovable Cloud managed OAuth to avoid redirect/session loops.
+      const result = await lovable.auth.signInWithOAuth("google", {
+        // IMPORTANT: use the full callback URL so we keep the same, single exchange point.
+        redirect_uri: oauthRedirectTo,
+        extraParams: {
+          prompt: "select_account",
         },
       });
 
-      if (error) {
+      if (result?.error) {
         toast({
           title: "Sign in failed",
-          description: getSafeErrorMessage(error, "Failed to sign in"),
+          description: getSafeErrorMessage(result.error, "Failed to sign in"),
           variant: "destructive",
         });
       }
+
+      // If redirected, the browser will navigate away; no further action needed.
     } catch (err) {
       toast({
         title: "Sign in failed",
