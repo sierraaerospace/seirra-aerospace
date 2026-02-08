@@ -28,13 +28,15 @@ export function getSafeErrorMessage(error: unknown, fallback: string = "An error
     return 'Too many attempts. Please wait a moment and try again.';
   }
   // Magic-link / OAuth redirect configuration errors (safe to show)
+  // Common GoTrue error when redirect URL is not in the allow list:
+  // "requested path is invalid"
   if (
-    lowerMessage.includes('redirect') &&
-    (lowerMessage.includes('not allowed') || lowerMessage.includes('invalid'))
+    lowerMessage.includes('requested path is invalid') ||
+    (lowerMessage.includes('redirect') &&
+      (lowerMessage.includes('not allowed') || lowerMessage.includes('invalid')))
   ) {
-    return 'Sign-in link is blocked by auth settings. Add this site URL and /auth/callback to the allowed redirect URLs, then try again.';
+    return 'Sign-in link is blocked by auth settings. Ensure your Site URL is correct and add this site domain (and /auth/callback) to the allowed redirect URLs, then try again.';
   }
-
   // Permission/RLS errors
   if (lowerMessage.includes('rls') || lowerMessage.includes('permission denied') || lowerMessage.includes('policy')) {
     return 'Access denied. You may not have permission for this action.';
