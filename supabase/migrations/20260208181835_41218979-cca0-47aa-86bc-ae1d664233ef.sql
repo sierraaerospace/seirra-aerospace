@@ -1,0 +1,6 @@
+-- Add admin SELECT policy to orders table for order fulfillment
+CREATE POLICY "Admins can view all orders"
+ON public.orders
+FOR SELECT
+TO authenticated
+USING (public.has_role(auth.uid(), 'admin'::app_role));
