@@ -23,6 +23,10 @@ const Login = () => {
   // Build the redirect URL for the magic link email
   const magicLinkRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(from)}`;
 
+  const debugAuth = new URLSearchParams(location.search).get("debug") === "1";
+  const debugSupabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+  const debugKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+
   // Check if user is already logged in
   useEffect(() => {
     let hasNavigated = false;
@@ -225,6 +229,21 @@ const Login = () => {
                   <li>No password needed — ever!</li>
                 </ol>
               </div>
+
+              {debugAuth && (
+                <div className="mt-4 p-3 rounded-lg border border-border bg-secondary text-xs">
+                  <div className="font-medium mb-1">Auth debug</div>
+                  <div className="text-muted-foreground break-all">
+                    <div>
+                      <span className="text-foreground">Backend URL:</span> {debugSupabaseUrl || "(missing)"}
+                    </div>
+                    <div>
+                      <span className="text-foreground">Key fingerprint:</span>{" "}
+                      {debugKey ? `${debugKey.slice(0, 12)}…${debugKey.slice(-6)}` : "(missing)"}
+                    </div>
+                  </div>
+                </div>
+              )}
             </form>
           )}
         </div>
