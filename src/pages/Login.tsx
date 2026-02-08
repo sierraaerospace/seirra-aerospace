@@ -132,15 +132,11 @@ const Login = () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
+        provider: 'google',
         options: {
-          // Always complete auth via our callback route to avoid redirect loops.
-          redirectTo: oauthRedirectTo,
-          queryParams: {
-            access_type: "offline",
-            prompt: "consent",
-          },
-        },
+          redirectTo: window.location.origin + '/auth/callback',
+          skipBrowserRedirect: false,
+        }
       });
 
       if (error) {
