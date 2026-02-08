@@ -121,7 +121,7 @@ const ShippingReturns = () => {
             </ul>
 
             <h3 className="font-heading text-lg font-semibold text-foreground mt-6 mb-3">6. Dead on Arrival (DOA)</h3>
-            <p>The same return process applies for DOA or warranty claims, excluding the 20% restocking fee.</p>
+            <p>The same return process applies for DOA or warranty claims, excluding the 20% restocking fee. Kindly refer to our Warranty Sections for Warranty Claims and Returns Process.</p>
 
             <h3 className="font-heading text-lg font-semibold text-foreground mt-6 mb-3">7. Non-Returnable Items</h3>
             <p>Returns are not accepted for the following products:</p>
