@@ -16,19 +16,25 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate("/login", { state: { from: "/profile" } });
-      }
-    });
+    let active = true;
 
-    const fetchUserData = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+    const redirectToLogin = () => {
+      navigate("/login", { state: { from: "/profile" } });
+    };
+
+    const fetchUserData = async (userId?: string) => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!active) return;
+
       if (!session) {
-        navigate("/login", { state: { from: "/profile" } });
+        redirectToLogin();
         return;
       }
+
+      const effectiveUserId = userId ?? session.user.id;
 
       setUser(session.user);
 
@@ -36,7 +42,7 @@ const Profile = () => {
       const { data: profile } = await supabase
         .from("profiles")
         .select("display_name")
-        .eq("user_id", session.user.id)
+        .eq("user_id", effectiveUserId)
         .single();
 
       if (profile?.display_name) {
@@ -47,15 +53,37 @@ const Profile = () => {
       const { count } = await supabase
         .from("orders")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", session.user.id);
+        .eq("user_id", effectiveUserId);
 
       setOrderCount(count ?? 0);
       setLoading(false);
     };
 
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+
+      // Only hard-redirect on explicit sign-out; initial null sessions can be transient.
+      if (event === "SIGNED_OUT") {
+        redirectToLogin();
+        return;
+      }
+
+      if (event === "SIGNED_IN" && session) {
+        // Defer DB work to avoid auth callback deadlocks.
+        setTimeout(() => {
+          fetchUserData(session.user.id);
+        }, 0);
+      }
+    });
+
     fetchUserData();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const handleLogout = async () => {
