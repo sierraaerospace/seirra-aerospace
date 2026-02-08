@@ -96,14 +96,28 @@ const Login = () => {
         description: "We've sent you a magic link to sign in.",
       });
     } catch (error: unknown) {
-      const safe = getSafeErrorMessage(error, "Failed to send magic link");
+      const fallback = "Failed to send magic link";
+      const safe = getSafeErrorMessage(error, fallback);
       const shouldShowRedirectHint = safe.toLowerCase().includes("blocked by auth settings");
+
+      // If we still only have the generic fallback, surface a small, sanitized hint
+      // to help diagnose domain/config/rate-limit issues.
+      const rawMessage =
+        error instanceof Error
+          ? error.message
+          : typeof error === "object" && error !== null && "message" in error
+            ? String((error as { message: unknown }).message)
+            : String(error);
+
+      const debugHint = safe === fallback && rawMessage && rawMessage !== "[object Object]"
+        ? ` (Details: ${rawMessage})`
+        : "";
 
       toast({
         title: "Error",
         description: shouldShowRedirectHint
           ? `${safe} (Redirect URL: ${magicLinkRedirectTo})`
-          : safe,
+          : `${safe}${debugHint}`,
         variant: "destructive",
       });
     } finally {
