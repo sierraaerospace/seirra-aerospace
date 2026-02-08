@@ -4,6 +4,7 @@ import { Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 import { toast } from "@/hooks/use-toast";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
@@ -44,7 +45,8 @@ const Login = () => {
   const from = getSafeRedirectPath(rawFrom, "/");
 
   // Always complete auth via a single callback route to avoid redirect loops.
-  const oauthRedirectTo = `https://www.sierraaerospace.in/auth/callback?next=${encodeURIComponent(from)}`;
+  // IMPORTANT: use the *current origin* so custom domain, preview, and published URLs all work.
+  const oauthRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(from)}`;
 
   // Check if user is already logged in
   useEffect(() => {
@@ -132,11 +134,10 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: 'https://www.sierraaerospace.in/auth/callback',
-          skipBrowserRedirect: false,
+      const { error } = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: oauthRedirectTo,
+        extraParams: {
+          prompt: "select_account",
         },
       });
 
