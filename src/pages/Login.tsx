@@ -44,7 +44,7 @@ const Login = () => {
   const from = getSafeRedirectPath(rawFrom, "/");
 
   // Always complete auth via a single callback route to avoid redirect loops.
-  const oauthRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(from)}`;
+  const oauthRedirectTo = `https://www.sierraaerospace.in/auth/callback?next=${encodeURIComponent(from)}`;
 
   // Check if user is already logged in
   useEffect(() => {
