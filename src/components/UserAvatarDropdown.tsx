@@ -42,19 +42,23 @@ export const UserAvatarDropdown = ({ onClose }: UserAvatarDropdownProps) => {
 
     fetchUserAndProfile();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("display_name")
-          .eq("user_id", session.user.id)
-          .single();
-        
-        setDisplayName(profile?.display_name ?? null);
-      } else {
-        setDisplayName(null);
-      }
+
+      // Defer any DB calls to avoid auth callback deadlocks
+      setTimeout(async () => {
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("display_name")
+            .eq("user_id", session.user.id)
+            .single();
+
+          setDisplayName(profile?.display_name ?? null);
+        } else {
+          setDisplayName(null);
+        }
+      }, 0);
     });
 
     return () => subscription.unsubscribe();
