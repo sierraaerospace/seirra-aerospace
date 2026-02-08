@@ -17,6 +17,11 @@ export function useAuthCodeExchange() {
     if (ranRef.current) return;
     ranRef.current = true;
 
+    // IMPORTANT: Our dedicated callback route handles exchanging the OAuth code.
+    // Running an exchange here as well can cause a second (failing) exchange and
+    // bounce the user back to /login.
+    if (location.pathname === "/auth/callback") return;
+
     const params = new URLSearchParams(location.search);
     const code = params.get("code");
 
