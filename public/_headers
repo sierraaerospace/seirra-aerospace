@@ -1,0 +1,11 @@
+# Cloudflare Pages (and similar CDNs) can aggressively cache HTML.
+# Prevent caching of the entry HTML so new JS bundles are picked up immediately after deploy.
+/
+  Cache-Control: no-store
+
+/index.html
+  Cache-Control: no-store
+
+# Let hashed assets stay immutable for performance.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
