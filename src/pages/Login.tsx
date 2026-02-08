@@ -96,9 +96,14 @@ const Login = () => {
         description: "We've sent you a magic link to sign in.",
       });
     } catch (error: unknown) {
+      const safe = getSafeErrorMessage(error, "Failed to send magic link");
+      const shouldShowRedirectHint = safe.toLowerCase().includes("blocked by auth settings");
+
       toast({
         title: "Error",
-        description: getSafeErrorMessage(error, "Failed to send magic link"),
+        description: shouldShowRedirectHint
+          ? `${safe} (Redirect URL: ${magicLinkRedirectTo})`
+          : safe,
         variant: "destructive",
       });
     } finally {

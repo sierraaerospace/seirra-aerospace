@@ -27,6 +27,13 @@ export function getSafeErrorMessage(error: unknown, fallback: string = "An error
   if (lowerMessage.includes('rate limit') || lowerMessage.includes('too many requests')) {
     return 'Too many attempts. Please wait a moment and try again.';
   }
+  // Magic-link / OAuth redirect configuration errors (safe to show)
+  if (
+    lowerMessage.includes('redirect') &&
+    (lowerMessage.includes('not allowed') || lowerMessage.includes('invalid'))
+  ) {
+    return 'Sign-in link is blocked by auth settings. Add this site URL and /auth/callback to the allowed redirect URLs, then try again.';
+  }
 
   // Permission/RLS errors
   if (lowerMessage.includes('rls') || lowerMessage.includes('permission denied') || lowerMessage.includes('policy')) {
