@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, User } from "lucide-react";
+import { Menu, X, ShoppingCart, User, Package, Settings, LogOut } from "lucide-react";
 import { Button } from "./ui/button";
 import sierraLogo from "@/assets/sierra-logo.jpeg";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { UserAvatarDropdown } from "./UserAvatarDropdown";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,6 +41,11 @@ const Navbar = () => {
     { label: "Why Us", href: "#why-us" },
     { label: "Contact", href: "#contact" },
   ];
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
 
   return (
     <motion.nav
@@ -84,19 +90,7 @@ const Navbar = () => {
               <span>Cart</span>
             </Link>
             {user ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">{user.email}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    window.location.reload();
-                  }}
-                >
-                  Sign Out
-                </Button>
-              </div>
+              <UserAvatarDropdown />
             ) : (
               <Button variant="gold" size="default" asChild>
                 <Link
@@ -148,15 +142,36 @@ const Navbar = () => {
                 </Link>
                 {user ? (
                   <>
-                    <span className="text-sm text-muted-foreground py-2">{user.email}</span>
+                    <Link 
+                      to="/profile" 
+                      onClick={() => setIsOpen(false)} 
+                      className="flex items-center gap-2 text-foreground hover:text-accent py-2"
+                    >
+                      <User size={20} />
+                      <span>My Profile</span>
+                    </Link>
+                    <Link 
+                      to="/orders" 
+                      onClick={() => setIsOpen(false)} 
+                      className="flex items-center gap-2 text-foreground hover:text-accent py-2"
+                    >
+                      <Package size={20} />
+                      <span>Order History</span>
+                    </Link>
+                    <Link 
+                      to="/settings" 
+                      onClick={() => setIsOpen(false)} 
+                      className="flex items-center gap-2 text-foreground hover:text-accent py-2"
+                    >
+                      <Settings size={20} />
+                      <span>Settings</span>
+                    </Link>
                     <Button
                       variant="outline"
-                      className="w-full"
-                      onClick={async () => {
-                        await supabase.auth.signOut();
-                        window.location.reload();
-                      }}
+                      className="w-full mt-2"
+                      onClick={handleLogout}
                     >
+                      <LogOut size={16} className="mr-2" />
                       Sign Out
                     </Button>
                   </>

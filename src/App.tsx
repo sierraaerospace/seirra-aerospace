@@ -15,6 +15,8 @@ import ShippingReturns from "./pages/ShippingReturns";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ConditionsOfSale from "./pages/ConditionsOfSale";
 import AuthCallback from "./pages/AuthCallback";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 import { useAuthCodeExchange } from "@/hooks/useAuthCodeExchange";
 
 const queryClient = new QueryClient();
@@ -41,6 +43,8 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/orders" element={<OrderHistory />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="/warranty" element={<Warranty />} />
               <Route path="/shipping-returns" element={<ShippingReturns />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
