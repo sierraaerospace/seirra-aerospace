@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { User, Package, Settings, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { clearAuthStorage } from "@/lib/authStorage";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,13 +67,13 @@ export const UserAvatarDropdown = ({ onClose }: UserAvatarDropdownProps) => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch (e) {
-      // Even if signOut fails, clear local state
-      console.error("Sign out error:", e);
+      await supabase.auth.signOut({ scope: "local" });
+    } catch {
+      // ignore
+    } finally {
+      clearAuthStorage();
+      window.location.href = "/";
     }
-    // Force clear and redirect
-    window.location.href = "/";
   };
 
   if (!user) return null;

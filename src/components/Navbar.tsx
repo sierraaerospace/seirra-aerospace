@@ -7,6 +7,7 @@ import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { UserAvatarDropdown } from "./UserAvatarDropdown";
+import { clearAuthStorage } from "@/lib/authStorage";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,6 +47,7 @@ const Navbar = () => {
     try {
       await supabase.auth.signOut({ scope: "local" });
     } finally {
+      clearAuthStorage();
       window.location.href = "/";
     }
   };
