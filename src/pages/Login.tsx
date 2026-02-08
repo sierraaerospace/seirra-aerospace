@@ -38,6 +38,9 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Helps confirm which build is deployed on your custom domain (and avoid cache confusion).
+  const BUILD_MARKER = "auth-fix-2026-02-08-1";
+
   // Get the redirect path from state, validate to prevent open redirect
   const rawFrom = (location.state as { from?: string })?.from || "/";
   const from = getSafeRedirectPath(rawFrom, "/");
@@ -132,6 +135,11 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
+      console.log(`[Login] ${BUILD_MARKER} using supabase.auth.signInWithOAuth`, {
+        origin: window.location.origin,
+        redirectTo: oauthRedirectTo,
+      });
+
       // Use the backend OAuth endpoint directly to avoid relying on `/<platform>~oauth/initiate`.
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -197,8 +205,9 @@ const Login = () => {
           <p className="text-muted-foreground text-center mb-6">
             Sign in to view your orders and cart
           </p>
-
-          {/* Google Login Button */}
+          <p className="text-muted-foreground text-center text-xs mb-6">
+            Build: {BUILD_MARKER}
+          </p>
           <Button
             type="button"
             variant="outline"
