@@ -1,10 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Download, ShoppingCart } from "lucide-react";
+import { X, Check, Download, MessageCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import type { Product } from "@/data/products";
-import { useNavigate } from "react-router-dom";
-import { useCart } from "@/contexts/CartContext";
-import { toast } from "sonner";
 
 interface ProductModalProps {
   product: Product | null;
@@ -12,15 +9,14 @@ interface ProductModalProps {
 }
 
 const ProductModal = ({ product, onClose }: ProductModalProps) => {
-  const navigate = useNavigate();
-  const { addToCart } = useCart();
-  
   if (!product) return null;
 
-  const handleAddToCart = () => {
-    addToCart(product);
-    toast.success(`${product.name} added to cart!`);
-    navigate("/cart");
+  const handleGetQuote = () => {
+    const message = `Hi, I'm interested in ${product.name}. Could you please provide more information and pricing details? Thank you!`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappURL = `https://wa.me/919663353121?text=${encodedMessage}`;
+    window.open(whatsappURL, "_blank");
+    onClose();
   };
 
   return (
@@ -75,19 +71,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
               </h2>
 
               {/* Tagline */}
-              <p className="text-muted-foreground text-lg mb-4">
+              <p className="text-muted-foreground text-lg mb-8">
                 {product.tagline}
               </p>
-
-              {/* Price */}
-              {product.price && (
-                <div className="mb-8">
-                  <p className="text-2xl font-bold text-accent">
-                    ₹{product.price.toLocaleString("en-IN")}
-                    <span className="text-sm font-normal text-muted-foreground ml-2">price per unit</span>
-                  </p>
-                </div>
-              )}
 
               {/* Specifications */}
               <div className="mb-8">
@@ -144,9 +130,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
                     Datasheet Unavailable
                   </Button>
                 )}
-                <Button variant="gold" size="lg" className="flex-1" onClick={handleAddToCart}>
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add to Cart
+                <Button variant="gold" size="lg" className="flex-1" onClick={handleGetQuote}>
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Get a Quote
                 </Button>
               </div>
             </div>
